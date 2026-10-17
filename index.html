@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#030307">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Eternia: un campo donde la atención se ve.">
+<title>Eternia</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="preload" href="./fonts/Spectral-300.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/Spectral-200.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Spectral (Production Type, SIL OFL 1.1) — autoalojada, subconjunto latino; ver public/fonts/OFL-Spectral.txt */
+  @font-face { font-family: "Spectral"; font-style: normal; font-weight: 200; font-display: block; src: url("./fonts/Spectral-200.woff2") format("woff2"); }
+  @font-face { font-family: "Spectral"; font-style: normal; font-weight: 300; font-display: block; src: url("./fonts/Spectral-300.woff2") format("woff2"); }
+  @font-face { font-family: "Spectral"; font-style: normal; font-weight: 500; font-display: block; src: url("./fonts/Spectral-500.woff2") format("woff2"); }
+  @font-face { font-family: "Spectral"; font-style: italic; font-weight: 300; font-display: block; src: url("./fonts/Spectral-300italic.woff2") format("woff2"); }
+  :root { --field: #030307; --breath: #97c2d7; --title: #ebe8ff; --debug-text: #ccffee; --debug-radius: 6px; }
+  html, body { margin: 0; height: 100%; background: var(--field); color: var(--title); overflow: hidden; overscroll-behavior: none; }
+  canvas { display: block; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; }
+  /* foco de teclado: una línea de aire dentro del borde, nunca un recuadro sobre las frases */
+  canvas:focus-visible { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--breath) 45%, transparent); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #hud { position: fixed; left: 8px; bottom: 8px; margin: 0; padding: 6px 8px; font: 11px/1.35 ui-monospace, "SF Mono", Menlo, monospace; color: var(--debug-text); background: color-mix(in oklab, var(--field) 70%, transparent); border-radius: var(--debug-radius); pointer-events: none; white-space: pre; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<main>
+  <h1 class="sr">Eternia</h1>
+  <canvas id="field" tabindex="0" role="application" aria-roledescription="campo" aria-label="Eternia" aria-describedby="como"></canvas>
+  <p id="como" class="sr">Experiencia audiovisual sin meta. Un dedo es la atención: tocar el campo lleva la esfera; quedarse sobre una frase la funde; llevar el dedo al borde es ir a la respiración. Con teclado: Intro o Espacio para entrar, mantén Espacio para posar la atención y muévela con las flechas; el borde está en los extremos.</p>
+  <p id="voz" class="sr" aria-live="polite"></p>
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

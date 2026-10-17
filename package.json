@@ -1,0 +1,20 @@
+{
+  "name": "eternia",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Eternia — experiencia audiovisual sin fin para bajar el ruido mental (PWA offline-first)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "icons": "python3 scripts/gen-icons.py",
+    "evidence": "python3 scripts/evidence.py"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0",
+    "vitest": "^3.0.0"
+  }
+}
