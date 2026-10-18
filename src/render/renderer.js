@@ -74,7 +74,7 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
   // ------- capas -------
   // Fondo de viaje (docs/ONDAS-SENSORIAL.md): seis capas ancladas al MUNDO con paralaje distinto. Al moverse la
   // cámara las lejanas apenas se desplazan y el polvo cercano pasa rápido; al alejarse (menos ego) cabe más universo.
-  // El clima de cada nivel (delta, theta, alfa, beta, gamma) cambia paleta, densidad, velocidad, luces y destellos.
+  // El clima de cada nivel (Tormenta, Parloteo, Murmullo, Quietud, Silencio) cambia paleta, densidad, velocidad, luces y destellos.
   let prevCam = null, camV = 0, camAng = 0, lastT = 0;
   const LAYERS = [ // [paralaje, celda, por celda, tamaño, tipo]
     [0.12, 150, 1, 0.8, 'star'], [0.3, 210, 2, 0.6, 'star'], [0.55, 240, 2, 0.7, 'dust'], [0.85, 190, 2, 0.9, 'dust'], [1.6, 230, 1, 1.4, 'near'],
@@ -95,7 +95,7 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
     r.addColorStop(0, hsl(lerpHue(cl.hue, s.hue, clamp(s.tint) * 0.5), lerp(cl.sat, 70, k), lerp(cl.light + 4, 14, k), 0.75));
     r.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, W, H);
     const z = s.cam.zoom;
-    // luces suaves lejanas: nubes de color tenue (abstractas, sin paisaje); más presentes en theta/alfa
+    // luces suaves lejanas: nubes de color tenue (abstractas, sin paisaje); más presentes en Quietud y Murmullo
     { const par = 0.35, C = 1100; const { zz, cx, cy, i0, i1, j0, j1 } = cellsOf(par, C, z, s); g.save(); g.globalCompositeOperation = 'lighter';
       for (let i = i0 - 1; i <= i1 + 1; i++) for (let j = j0 - 1; j <= j1 + 1; j++) {
         const hsh = hash(i * 73.1 + j * 19.7); if (hsh < 0.45) continue;
@@ -107,7 +107,7 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
         g.globalAlpha = (0.05 + 0.16 * cl.lights) * (0.6 + 0.8 * hash(i + j * 11)) * breathe; g.drawImage(dot(h2), sx - rr, sy - rr, rr * 2, rr * 2);
       }
       g.restore(); }
-    // orbes de luz (theta): formas luminosas discretas que aparecen y se van en varios segundos (Lindahl et al. 2014)
+    // orbes de luz (Quietud): formas luminosas discretas que aparecen y se van en varios segundos (Lindahl et al. 2014)
     if (cl.orbs > 0.02) { g.save(); g.globalCompositeOperation = 'lighter'; const N = 5, life = 9;
       for (let n = 0; n < N; n++) { const ph = t / life + n / N; const k2 = Math.floor(ph); const a = Math.sin((ph - k2) * Math.PI);
         const q = n * 31.7 + k2 * 7.3; const par = 0.5; const wx = s.cam.x * par + (hash(q) - 0.5) * W * 1.2 / z, wy = s.cam.y * par + (hash(q + 2) - 0.5) * H * 1.1 / z;

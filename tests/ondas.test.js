@@ -6,21 +6,25 @@ import { mixFor } from '../src/audio/mix.js';
 
 const at = (def, extra = {}) => Object.assign(createState({ w: 390, h: 844 }), { def, ...extra });
 
-describe('niveles de ondas (clima)', () => {
+describe('niveles de ruido mental (clima)', () => {
+  it('los nombres son de ruido mental, de más ego a menos, y no nombran ondas', () => {
+    expect([...LEVELS].reverse().map((l) => l.name)).toEqual(['Tormenta', 'Parloteo', 'Murmullo', 'Quietud', 'Silencio']);
+    for (const l of LEVELS) expect(JSON.stringify(l)).not.toMatch(/gamma|beta|alfa|alpha|theta|delta/i);
+  });
   it('los pesos suman 1 y cada nivel domina su tramo', () => {
     for (let d = 0; d <= 1.0001; d += 0.01) expect(levelWeights(d).reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
-    expect([0.02, 0.14, 0.28, 0.5, 0.9].map((d) => levelOf(d).id)).toEqual(['delta', 'theta', 'alfa', 'beta', 'gamma']);
+    expect([0.02, 0.14, 0.28, 0.5, 0.9].map((d) => levelOf(d).id)).toEqual(['silencio', 'quietud', 'murmullo', 'parloteo', 'tormenta']);
   });
-  it('la entrada (0,45) es beta baja, el nivel del medio', () => { expect(levelOf(0.45).id).toBe('beta'); expect(levelOf(0.45).region).toBe('mezcla'); });
+  it('la entrada (0,45) es Parloteo, el nivel del medio', () => { expect(levelOf(0.45).id).toBe('parloteo'); expect(levelOf(0.45).name).toBe('Parloteo'); expect(levelOf(0.45).region).toBe('mezcla'); });
   it('menos ego = más quieto, menos polvo y menos destellos; el centro tiene más estrellas lejanas', () => {
-    const order = ['delta', 'theta', 'alfa', 'beta', 'gamma'].map((id) => LEVELS.find((l) => l.id === id));
+    const order = ['silencio', 'quietud', 'murmullo', 'parloteo', 'tormenta'].map((id) => LEVELS.find((l) => l.id === id));
     for (let i = 1; i < order.length; i++) {
       expect(order[i].speed).toBeGreaterThan(order[i - 1].speed); expect(order[i].dust).toBeGreaterThan(order[i - 1].dust);
       expect(order[i].flash).toBeGreaterThan(order[i - 1].flash); expect(order[i].stars).toBeLessThan(order[i - 1].stars);
     }
   });
-  it('theta es el nivel de los orbes de luz', () => { const th = climate(at(0.14)); expect(th.orbs).toBeGreaterThan(0.9); expect(climate(at(0.5)).orbs).toBe(0); });
-  it('gamma se tiñe con la piel de la esfera: disonante rojo, cristal oro', () => {
+  it('Quietud es el nivel de los orbes de luz', () => { const th = climate(at(0.14)); expect(th.orbs).toBeGreaterThan(0.9); expect(climate(at(0.5)).orbs).toBe(0); });
+  it('la Tormenta se tiñe con la piel de la esfera: disonante rojo, cristal oro', () => {
     expect(climate(at(0.95, { texture: -1, tint: 0 })).hue).toBeCloseTo(8, 0);
     expect(climate(at(0.95, { texture: 1, tint: 0 })).hue).toBeCloseTo(42, 0);
   });

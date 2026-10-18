@@ -1,8 +1,8 @@
 {
- "01-delta-centro": {
+ "01-silencio": {
   "def": 0.02,
   "zoom": 0.407,
-  "nivel": "delta",
+  "nivel": "silencio",
   "polvo": 0.2,
   "estrellas": 0.9,
   "velocidad": 0.15,
@@ -10,10 +10,10 @@
   "orbes": 0.1,
   "frases": 8
  },
- "02-theta": {
+ "02-quietud": {
   "def": 0.14,
   "zoom": 0.523,
-  "nivel": "theta",
+  "nivel": "quietud",
   "polvo": 0.35,
   "estrellas": 0.6,
   "velocidad": 0.3,
@@ -21,10 +21,10 @@
   "orbes": 1,
   "frases": 8
  },
- "03-alfa": {
+ "03-murmullo": {
   "def": 0.28,
   "zoom": 0.701,
-  "nivel": "alfa",
+  "nivel": "murmullo",
   "polvo": 0.55,
   "estrellas": 0.45,
   "velocidad": 0.5,
@@ -32,10 +32,10 @@
   "orbes": 0.35,
   "frases": 8
  },
- "04-beta-baja": {
+ "04-parloteo": {
   "def": 0.5,
   "zoom": 1.036,
-  "nivel": "beta",
+  "nivel": "parloteo",
   "polvo": 0.75,
   "estrellas": 0.3,
   "velocidad": 0.85,
@@ -43,10 +43,10 @@
   "orbes": 0,
   "frases": 8
  },
- "05-gamma-disonante": {
+ "05-tormenta-disonante": {
   "def": 0.9,
   "zoom": 1.381,
-  "nivel": "gamma",
+  "nivel": "tormenta",
   "polvo": 1,
   "estrellas": 0.15,
   "velocidad": 1.35,
@@ -54,10 +54,10 @@
   "orbes": 0,
   "frases": 15
  },
- "06-gamma-cristal": {
+ "06-tormenta-cristal": {
   "def": 0.9,
   "zoom": 1.381,
-  "nivel": "gamma",
+  "nivel": "tormenta",
   "polvo": 1,
   "estrellas": 0.15,
   "velocidad": 1.35,
@@ -65,10 +65,10 @@
   "orbes": 0,
   "frases": 15
  },
- "07-viaje-beta": {
+ "07-viaje-parloteo": {
   "def": 0.5,
   "zoom": 1.036,
-  "nivel": "beta",
+  "nivel": "parloteo",
   "polvo": 0.75,
   "estrellas": 0.3,
   "velocidad": 0.85,
@@ -76,10 +76,10 @@
   "orbes": 0,
   "frases": 8
  },
- "08-viaje-theta": {
+ "08-viaje-quietud": {
   "def": 0.14,
   "zoom": 0.523,
-  "nivel": "theta",
+  "nivel": "quietud",
   "polvo": 0.35,
   "estrellas": 0.6,
   "velocidad": 0.3,
@@ -90,7 +90,7 @@
  "09-viaje-movimiento-reducido": {
   "def": 0.5,
   "zoom": 1.031,
-  "nivel": "beta",
+  "nivel": "parloteo",
   "polvo": 0.75,
   "estrellas": 0.3,
   "velocidad": 0.85,

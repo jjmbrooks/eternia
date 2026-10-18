@@ -84,7 +84,7 @@ El mundo es abstracto desde el primer segundo. No hay mar, no hay paisaje y no h
 
 Si el cristal es más lindo que el estado sin fusión, quien juega va a vivir en el cristal. El estado sin fusión —y más aún el centro— tiene que ganar en belleza: más aire, más silencio, los colores nítidos pero sin teñir un centro que ya no está. El fragmento es estrecho. El cristal es estrecho. Lo abierto es vasto.
 
-No hay selector de olas ni última pantalla. Las ondas que sirvieron para pensar el arco —beta, alfa, theta, delta, gamma— quedan como clima sonoro de la distancia al centro, no como niveles que se superan. Afuera el sonido es denso. Hacia adentro se abre, se alarga y calla. Se puede habitar cualquier región el tiempo que se quiera. No hay créditos.
+No hay selector de olas ni última pantalla. Las ondas que sirvieron para pensar el arco —beta, alfa, theta, delta, gamma— quedan como clima sonoro de la distancia al centro, no como niveles que se superan. *(Nota 2026-10-17: los estados se nombran por el ruido mental —Tormenta, Parloteo, Murmullo, Quietud, Silencio—; ver [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md).)* Afuera el sonido es denso. Hacia adentro se abre, se alarga y calla. Se puede habitar cualquier región el tiempo que se quiera. No hay créditos.
 
 ### De qué está hecho un pensamiento
 

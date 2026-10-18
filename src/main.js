@@ -1,3 +1,4 @@
+import { levelOf } from './core/levels.js';
 import { createState, step, memoryOf, region, screenRadius, seedField, toWorld, toScreen, layoutOf } from './core/sim.js';
 import { createRenderer } from './render/renderer.js';
 import { createAudio } from './audio/engine.js';
@@ -113,7 +114,7 @@ function frame(now) {
 // ?debug=1 → panel con definición / vitalidad / atención. ?debug=2 → solo ganchos (para capturas).
 let hud = null;
 function hudUpdate() {
-  hud.textContent = `def ${s.def.toFixed(3)}  ${region(s.def)}\nvit ${s.vit.toFixed(3)}\natt ${s.attention} ${s.attentionTime.toFixed(1)}s\n` +
+  hud.textContent = `def ${s.def.toFixed(3)}  ${region(s.def)} · ${levelOf(s.def).name}\nvit ${s.vit.toFixed(3)}\natt ${s.attention} ${s.attentionTime.toFixed(1)}s\n` +
     `hue ${s.hue.toFixed(0)} tint ${s.tint.toFixed(2)} tex ${s.texture.toFixed(2)} amb ${s.amb.toFixed(2)}\n` +
     `frases ${s.thoughts.length}  fusión ${s.fusion ? s.fusion.kind : '—'}\nvoz ${s.guide.state} ${s.guide.acceptT.toFixed(1)}s  ⌀ ${(2 * screenRadius(s)).toFixed(0)}px\n` +
     `zoom ${s.cam.zoom.toFixed(2)}  cam ${s.cam.x.toFixed(0)},${s.cam.y.toFixed(0)}  ${audio.muted ? 'mudo' : ''}\n` +

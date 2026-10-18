@@ -1,4 +1,4 @@
-# Capturas del clima por nivel (docs/ONDAS-SENSORIAL.md) y del fondo de viaje. 390×844, DPR 2.
+# Capturas del clima por nivel de ruido mental (docs/ONDAS-SENSORIAL.md) y del fondo de viaje. 390×844, DPR 2.
 # Uso: npm run build && npx vite preview --port 4174 &  ;  python3 scripts/evidence-ondas.py [URL]
 # ?debug=2 deja fijar la definición; la cámara llega sola a su zoom (se espera 12 s por nivel).
 import sys, time, json
@@ -9,8 +9,8 @@ OUT = Path(__file__).resolve().parent.parent / 'docs' / 'evidence' / 'ondas'; OU
 W, H = 390, 844
 errors = []; log = {}
 LEVELS = [ # nombre, def, piel
-    ('01-delta-centro', 0.02, ''), ('02-theta', 0.14, ''), ('03-alfa', 0.28, ''),
-    ('04-beta-baja', 0.5, ''), ('05-gamma-disonante', 0.9, 's.tint = 1; s.texture = -0.85; s.hue = 4;'), ('06-gamma-cristal', 0.9, 's.tint = 1; s.texture = 0.85; s.hue = 42;'),
+    ('01-silencio', 0.02, ''), ('02-quietud', 0.14, ''), ('03-murmullo', 0.28, ''),
+    ('04-parloteo', 0.5, ''), ('05-tormenta-disonante', 0.9, 's.tint = 1; s.texture = -0.85; s.hue = 4;'), ('06-tormenta-cristal', 0.9, 's.tint = 1; s.texture = 0.85; s.hue = 42;'),
 ]
 with sync_playwright() as pw:
     b = pw.chromium.launch()
@@ -29,7 +29,7 @@ with sync_playwright() as pw:
         pg = fresh(rm=rm)
         pg.evaluate("(d) => { const e = window.__eternia; e.afterStep = (s) => { s.def = d; s.vit = 0.7; s.cam.x += 380 / 60; s.cam.y -= 120 / 60; s.sphere.x = s.cam.x; s.sphere.y = s.cam.y; s.sphere.vx = 380; s.sphere.vy = -120; }; }", d)
         time.sleep(12); shot(pg, name); pg.context.close()
-    travel('07-viaje-beta', 0.5); travel('08-viaje-theta', 0.14); travel('09-viaje-movimiento-reducido', 0.5, rm=True)
+    travel('07-viaje-parloteo', 0.5); travel('08-viaje-quietud', 0.14); travel('09-viaje-movimiento-reducido', 0.5, rm=True)
     b.close()
 log['errors'] = errors
 (OUT / 'medidas.json').write_text(json.dumps(log, ensure_ascii=False, indent=1))

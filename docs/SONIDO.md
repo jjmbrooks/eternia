@@ -28,8 +28,8 @@ Diseño, fuentes y funcionamiento del sonido. Autor: Codelius (asistente de Broo
 4. **La quietud suena más bella que el cristal:** más aire, más espacio, más silencio.
 5. **Sin saltos de volumen, sin disonancias que ataquen, sin sustos.** Lo fragmentado puede ser incómodo; nunca un
    sobresalto.
-6. **Sin beats binaurales ni promesas** sobre ondas cerebrales (investigación y clima por nivel en [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md)). Los nombres (gamma, beta, alfa, theta, delta) solo
-   sirven para pensar el clima.
+6. **Sin beats binaurales ni promesas** sobre ondas cerebrales Los estados se llaman por el ruido mental: **Tormenta, Parloteo, Murmullo, Quietud, Silencio**. Las ondas que
+   inspiraron la investigación solo aparecen en la tabla de correspondencia de [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md).
 
 ## 3. Arquitectura: capas y acentos
 
@@ -56,10 +56,10 @@ Las regiones son estados de la definición del ego (DECISIONES › Regiones). En
 
 | Región (definición) | Clima | Síntesis | Por qué |
 |---|---|---|---|
-| Centro (< 0,08) | «delta»: parciales altas, mucho silencio | 4 senos E6–E7 (1318–2637 Hz), muy suaves, LFO 0,03 Hz | El PDF: «en el centro quedan parciales altas, limpias, y mucho silencio» |
-| Calma (0,08–0,35) | «alfa»: tonos que se alargan | 4 senos A3–B4, LFO 0,06 Hz, paso bajo 3 kHz | La respiración se asienta; nada empuja |
-| Mezcla (0,35–0,72) | «beta baja»: aire cálido | 5 triángulos A2–E4, LFO 0,1 Hz, paso bajo 1,4 kHz | Es donde se entra: cálido, todavía abierto |
-| Extremo disonante (> 0,72, áspero) | «gamma / beta alta»: denso, seco, roto | 6 dientes de sierra desafinados (±15 cents), modulación de amplitud a 37 Hz (grano), paso bajo 2,2 kHz | Fragmento: incómodo pero no agresivo (el paso bajo quita lo que muerde) |
+| Centro (< 0,08) | Silencio: parciales altas, mucho silencio | 4 senos E6–E7 (1318–2637 Hz), muy suaves, LFO 0,03 Hz | El PDF: «en el centro quedan parciales altas, limpias, y mucho silencio» |
+| Calma (0,08–0,35) | Quietud y Murmullo: tonos que se alargan | 4 senos A3–B4, LFO 0,06 Hz, paso bajo 3 kHz | La respiración se asienta; nada empuja |
+| Mezcla (0,35–0,72) | Parloteo: aire cálido | 5 triángulos A2–E4, LFO 0,1 Hz, paso bajo 1,4 kHz | Es donde se entra: cálido, todavía abierto |
+| Extremo disonante (> 0,72, áspero) | Tormenta: denso, seco, roto | 6 dientes de sierra desafinados (±15 cents), modulación de amplitud a 37 Hz (grano), paso bajo 2,2 kHz | Fragmento: incómodo pero no agresivo (el paso bajo quita lo que muerde) |
 | Extremo cristal (> 0,72, liso) | demasiado consonante, sin aire | 6 senos en quintas y octavas justas, sin LFO | Bello y rígido: «música consonante y sin aire» |
 
 ### El espacio sigue al zoom (y el zoom sigue al ego)

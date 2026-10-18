@@ -5,5 +5,5 @@
 - `src/core/` es puro: nada de DOM, audio ni `Math.random`. Toda regla nueva lleva su prueba en `tests/`.
 - Prohibido en el campo: menús, puntajes, botones, recuadros o globos de cómic alrededor de las frases, analíticas y cuentas. Las **esferas contenedoras** de las frases sí van (las pidió Brooks el 2026-10-17; ver `docs/DECISIONES.md`).
 - El sonido se diseña en `docs/SONIDO.md`; la mezcla pura vive en `src/audio/mix.js` y tiene pruebas.
-- El clima por nivel (fondo de viaje y aire sonoro) vive en `src/core/levels.js` y se justifica en `docs/ONDAS-SENSORIAL.md`; destellos siempre ≤ 2/s (WCAG 2.3.1).
+- Los estados se nombran por el ruido mental (Tormenta, Parloteo, Murmullo, Quietud, Silencio), nunca por ondas cerebrales; el clima por nivel (fondo de viaje y aire sonoro) vive en `src/core/levels.js` y se justifica en `docs/ONDAS-SENSORIAL.md`; destellos siempre ≤ 2/s (WCAG 2.3.1).
 - Haz commits normales (en `main` o en una rama con PR) y **nunca uses force-push**.
