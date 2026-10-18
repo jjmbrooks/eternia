@@ -103,7 +103,7 @@ function frame(now) {
     const ev = step(s, dt, ui.entered ? input : null, { speed });
     if (keep) [s.def, s.vit] = keep;
     if (window.__eternia?.afterStep) window.__eternia.afterStep(s); // solo depuración (capturas)
-    audio.update(s, ev, { guideText: s.guide.state === 'offered' && s.guide.textT > 0 }); announce(ev);
+    audio.update(s, ev, { guideText: s.guide.state === 'offered' && s.guide.textT > 0, reducedMotion }); announce(ev);
     const t0 = performance.now(); renderer.draw(s, ui, clock); ui.drawMs = lerpMs(ui.drawMs, performance.now() - t0);
     if (hud) hudUpdate();
   }

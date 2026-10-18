@@ -5,6 +5,7 @@
 import { PARAMS } from '../core/params.js';
 import { PULSE_PERIODS, toScreen } from '../core/sim.js';
 import { mixFor, TAU, pitchFor } from './mix.js';
+import { flashesAt } from '../core/levels.js';
 
 const BEDS = {
   centro: { type: 'sine', f: [1318.5, 1760, 1975.5, 2637], g: [0.05, 0.035, 0.03, 0.02], lfo: 0.03 },                       // «delta»: parciales altas, mucho silencio
@@ -17,7 +18,8 @@ const PULSE_NOTES = [523.25, 659.25, 783.99]; // 5, 7, 4
 const MAX_VOICES = 3; const VOICE_GAP = 1.3; // s entre voces de pensamientos: el silencio también se compone
 
 export function createAudio() {
-  let ctx = null, master, lowpass, wet, echo, echoFb, echoWet, groups = {}, panners = [], breath, wind, shimmer, timer = null, started = false;
+  let ctx = null, master, lowpass, wet, echo, echoFb, echoWet, groups = {}, panners = [], breath, wind, shimmer, timer = null, started = false, clima;
+  let lastFlash = -1e9;
   let muted = false; let mix = null; let lastVoice = -10; let activeVoices = 0;
   const voiced = new Set(); let fusedVoice = null; let lastAttention = 'none';
   const nextPulse = [0, 0, 0];
@@ -80,6 +82,18 @@ export function createAudio() {
     const sg = ctx.createGain(); sg.gain.value = 0; const s1 = ctx.createOscillator(), s2 = ctx.createOscillator();
     s1.frequency.value = 660; s2.frequency.value = 660 * 1.618; s1.connect(sg); s2.connect(sg); sg.connect(master); s1.start(); s2.start();
     shimmer = { g: sg, s1, s2 };
+    // aire del nivel (lecho): ruido café por un paso bajo; delta casi silencio y oscuro, gamma más granulado y claro
+    const cs = ctx.createBufferSource(); cs.buffer = noiseBuffer(5); cs.loop = true;
+    const clp = ctx.createBiquadFilter(); clp.type = 'lowpass'; clp.frequency.value = 700; clp.Q.value = 0.3;
+    const cg = ctx.createGain(); cg.gain.value = 0; cs.connect(clp); clp.connect(cg); cg.connect(master); cs.start();
+    clima = { lp: clp, g: cg };
+  }
+  // destello: un brillo agudo y muy bajo (pentatónica de mi), con la cola en la reverberación; nunca un clic
+  const GLINT = [1318.5, 1479.98, 1661.2, 1975.5, 2217.5];
+  function glint(level, x, id) {
+    if (level < 0.001) return; const t = ctx.currentTime + 0.01; const f = GLINT[Math.abs(id) % GLINT.length];
+    const g = ctx.createGain(); const pan = ctx.createStereoPanner(); pan.pan.value = (x - 0.5) * 1.4; g.connect(pan); pan.connect(master);
+    env(g, t, 0.06, level, 1.6); osc('sine', f, t, 1.6, g); osc('sine', f * 2.01, t, 0.6, g);
   }
 
   // ── voces de los pensamientos, una por tipo (docs/SONIDO.md › Voces) ──
@@ -206,9 +220,9 @@ export function createAudio() {
     if (ctx.state === 'suspended') await ctx.resume();
   }
 
-  function update(s, events, { guideText = false } = {}) {
+  function update(s, events, { guideText = false, reducedMotion = false } = {}) {
     if (!ctx) return;
-    mix = mixFor(s, { muted, guideText });
+    mix = mixFor(s, { muted, guideText, reducedMotion });
     const m = mix;
     at(master.gain, m.master, TAU.master);
     for (const n of Object.keys(BEDS)) at(groups[n].gain, m.bed[n], TAU.bed);
@@ -218,6 +232,9 @@ export function createAudio() {
     at(breath.bg.gain, m.breath.gain, TAU.breath); at(breath.bp.frequency, m.breath.freq, 0.3); at(breath.pan.pan, m.breath.pan, 0.6);
     at(wind.g.gain, m.wind * 0.12, TAU.wind); at(wind.bp.frequency, 380 + m.wind * 1600, TAU.wind); at(wind.pan.pan, m.windPan, 0.4);
     at(shimmer.g.gain, m.shimmer * 0.025, 0.3); at(shimmer.s1.frequency, 660 + 330 * m.shimmer, 0.3); at(shimmer.s2.frequency, (660 + 330 * m.shimmer) * 1.618, 0.3);
+    at(clima.g.gain, m.clima.noise, TAU.bed); at(clima.lp.frequency, m.clima.noiseLp, TAU.bed);
+    if (s.t < lastFlash - 1) lastFlash = -1e9; // partida nueva
+    for (const f of flashesAt(s.t, m.clima.flashRate)) if (f.t0 > lastFlash) { lastFlash = f.t0; glint(0.012 * m.clima.glint * (0.6 + 0.4 * f.size), f.x, f.id); }
     if (fusedVoice) at(fusedVoice.g.gain, 0.05 * Math.max(0.3, m.voices), TAU.voices);
 
     // los pensamientos que entran a la vista dicen su tipo, de uno en uno y con silencio entre voces

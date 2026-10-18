@@ -28,7 +28,7 @@ Diseño, fuentes y funcionamiento del sonido. Autor: Codelius (asistente de Broo
 4. **La quietud suena más bella que el cristal:** más aire, más espacio, más silencio.
 5. **Sin saltos de volumen, sin disonancias que ataquen, sin sustos.** Lo fragmentado puede ser incómodo; nunca un
    sobresalto.
-6. **Sin beats binaurales ni promesas** sobre ondas cerebrales. Los nombres (gamma, beta, alfa, theta, delta) solo
+6. **Sin beats binaurales ni promesas** sobre ondas cerebrales (investigación y clima por nivel en [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md)). Los nombres (gamma, beta, alfa, theta, delta) solo
    sirven para pensar el clima.
 
 ## 3. Arquitectura: capas y acentos

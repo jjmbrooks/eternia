@@ -2,7 +2,8 @@
 import { PARAMS } from '../core/params.js';
 import { screenRadius, bandWidth, legibility, affinity, skinOf, pulsePhases, toScreen } from '../core/sim.js';
 import { outline } from '../core/bubble.js';
-import { clamp, lerp, smooth } from '../core/math.js';
+import { clamp, lerp, smooth, lerpHue } from '../core/math.js';
+import { climate, flashesAt, flashRate, FLASH_LIFE } from '../core/levels.js';
 
 const TAU = Math.PI * 2;
 // Tipografía (typeset, Impeccable): Spectral, serif hecha para pantalla, autoalojada (OFL). Roles en DESIGN.md.
@@ -71,41 +72,79 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
   }
 
   // ------- capas -------
+  // Fondo de viaje (docs/ONDAS-SENSORIAL.md): seis capas ancladas al MUNDO con paralaje distinto. Al moverse la
+  // cámara las lejanas apenas se desplazan y el polvo cercano pasa rápido; al alejarse (menos ego) cabe más universo.
+  // El clima de cada nivel (delta, theta, alfa, beta, gamma) cambia paleta, densidad, velocidad, luces y destellos.
+  let prevCam = null, camV = 0, camAng = 0, lastT = 0;
+  const LAYERS = [ // [paralaje, celda, por celda, tamaño, tipo]
+    [0.12, 150, 1, 0.8, 'star'], [0.3, 210, 2, 0.6, 'star'], [0.55, 240, 2, 0.7, 'dust'], [0.85, 190, 2, 0.9, 'dust'], [1.6, 230, 1, 1.4, 'near'],
+  ];
+  function cellsOf(par, C, z, s) {
+    const zz = z * par + (1 - par) * 0.6; const cx = s.cam.x * par, cy = s.cam.y * par; const hw = W / 2 / zz, hh = H / 2 / zz;
+    return { zz, cx, cy, i0: Math.floor((cx - hw) / C), i1: Math.floor((cx + hw) / C), j0: Math.floor((cy - hh) / C), j1: Math.floor((cy + hh) / C) };
+  }
   function background(s, t) {
-    g.fillStyle = '#030307'; g.fillRect(0, 0, W, H);
+    const cl = climate(s); s._climate = cl;
+    const dt = Math.min(0.1, Math.max(0, t - lastT)); lastT = t;
+    if (prevCam && dt > 0) { const vx = (s.cam.x - prevCam.x) / dt, vy = (s.cam.y - prevCam.y) / dt; const v = Math.hypot(vx, vy) * s.cam.zoom; camV = lerp(camV, v, 0.15); if (v > 5) camAng = Math.atan2(vy, vx); }
+    prevCam = { x: s.cam.x, y: s.cam.y };
+    const mot = reducedMotion ? 0.25 : 1; const sp = cl.speed * mot;
+    g.fillStyle = hsl(cl.hue, cl.sat * 0.6, cl.light * 0.45); g.fillRect(0, 0, W, H);
     const k = clamp(s.tint) * (0.25 + 0.75 * s.def);
     const r = g.createRadialGradient(W / 2, H * 0.46, 0, W / 2, H * 0.46, H * 0.72);
-    r.addColorStop(0, hsl(lerp(225, s.hue, clamp(s.tint)), lerp(30, 70, k), lerp(9, 14, k), 0.55));
+    r.addColorStop(0, hsl(lerpHue(cl.hue, s.hue, clamp(s.tint) * 0.5), lerp(cl.sat, 70, k), lerp(cl.light + 4, 14, k), 0.75));
     r.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, W, H);
-    // el lienzo infinito: capas de motas y nieblas ancladas al MUNDO, con paralaje. Al alejarse la cámara
-    // (menos ego) cabe más universo en la pantalla; al acercarse (más ego) se ve menos y más grande.
-    const z = s.cam.zoom; const tintHue = lerp(220, s.hue, clamp(s.tint) * 0.6);
-    // nieblas lejanas: celdas grandes; cada una puede tener una nube de color tenue (abstracta, sin paisaje)
-    { const par = 0.35, C = 1100, zz = z * par + (1 - par) * 0.6; const cx = s.cam.x * par, cy = s.cam.y * par;
-      const hw = W / 2 / zz, hh = H / 2 / zz; g.save(); g.globalCompositeOperation = 'lighter';
-      for (let i = Math.floor((cx - hw) / C) - 1; i <= Math.floor((cx + hw) / C) + 1; i++) for (let j = Math.floor((cy - hh) / C) - 1; j <= Math.floor((cy + hh) / C) + 1; j++) {
+    const z = s.cam.zoom;
+    // luces suaves lejanas: nubes de color tenue (abstractas, sin paisaje); más presentes en theta/alfa
+    { const par = 0.35, C = 1100; const { zz, cx, cy, i0, i1, j0, j1 } = cellsOf(par, C, z, s); g.save(); g.globalCompositeOperation = 'lighter';
+      for (let i = i0 - 1; i <= i1 + 1; i++) for (let j = j0 - 1; j <= j1 + 1; j++) {
         const hsh = hash(i * 73.1 + j * 19.7); if (hsh < 0.45) continue;
         const wx = (i + hash(i * 3.3 + j)) * C, wy = (j + hash(i + j * 5.1)) * C; const rr = C * (0.35 + 0.4 * hash(i * 9 + j * 2)) * zz;
         const sx = W / 2 + (wx - cx) * zz, sy = H / 2 + (wy - cy) * zz;
         if (sx < -rr || sx > W + rr || sy < -rr || sy > H + rr) continue;
-        const hues = [2, 42, 285, 205, 175]; const hh2 = hues[Math.floor(hash(i * 1.7 + j * 8.3) * 5)];
-        g.globalAlpha = 0.05 + 0.05 * hash(i + j * 11); g.drawImage(dot(hh2), sx - rr, sy - rr, rr * 2, rr * 2);
+        const h2 = hash(i * 1.7 + j * 8.3) < 0.5 ? cl.hue : cl.hue2;
+        const breathe = 0.75 + 0.25 * Math.sin(t * 0.07 * mot + hsh * 20); // ciclo de ~90 s: no parpadea
+        g.globalAlpha = (0.05 + 0.16 * cl.lights) * (0.6 + 0.8 * hash(i + j * 11)) * breathe; g.drawImage(dot(h2), sx - rr, sy - rr, rr * 2, rr * 2);
       }
       g.restore(); }
-    // motas: tres profundidades
-    for (const [par, C, n, base] of [[0.45, 260, 2, 0.5], [0.7, 200, 2, 0.8], [1, 170, 1, 1.1]]) {
-      const zz = z * par + (1 - par) * 0.6; const cx = s.cam.x * par, cy = s.cam.y * par;
-      const hw = W / 2 / zz, hh = H / 2 / zz; const i0 = Math.floor((cx - hw) / C), i1 = Math.floor((cx + hw) / C), j0 = Math.floor((cy - hh) / C), j1 = Math.floor((cy + hh) / C);
+    // orbes de luz (theta): formas luminosas discretas que aparecen y se van en varios segundos (Lindahl et al. 2014)
+    if (cl.orbs > 0.02) { g.save(); g.globalCompositeOperation = 'lighter'; const N = 5, life = 9;
+      for (let n = 0; n < N; n++) { const ph = t / life + n / N; const k2 = Math.floor(ph); const a = Math.sin((ph - k2) * Math.PI);
+        const q = n * 31.7 + k2 * 7.3; const par = 0.5; const wx = s.cam.x * par + (hash(q) - 0.5) * W * 1.2 / z, wy = s.cam.y * par + (hash(q + 2) - 0.5) * H * 1.1 / z;
+        const sx = W / 2 + (wx - s.cam.x * par) * z, sy = H / 2 + (wy - s.cam.y * par) * z; const rr = (45 + 70 * hash(q + 4)) * Math.sqrt(z);
+        g.globalAlpha = 0.5 * cl.orbs * a * a; g.drawImage(dot(hash(q + 6) < 0.5 ? cl.hue2 : cl.hue), sx - rr, sy - rr, rr * 2, rr * 2); }
+      g.restore(); }
+    // estrellas lejanas, polvo medio y polvo cercano; el cercano se estira en la dirección del viaje
+    const streak = reducedMotion ? 0 : smooth(40, 260, camV);
+    for (const [par, C, n, base, kind] of LAYERS) {
+      const dens = kind === 'star' ? cl.stars : cl.dust; if (dens < 0.02) continue;
+      const { zz, cx, cy, i0, i1, j0, j1 } = cellsOf(par, C, z, s);
       if ((i1 - i0 + 1) * (j1 - j0 + 1) > 400) continue; // tope de costo
-      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) for (let k = 0; k < n; k++) {
-        const q = i * 131.7 + j * 71.3 + k * 17.1 + par * 1000;
-        const wx = (i + hash(q)) * C + Math.sin(t * 0.05 + q) * 6, wy = (j + hash(q + 1.3)) * C + Math.cos(t * 0.04 + q) * 6;
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) for (let kk = 0; kk < n * 2; kk++) {
+        const q = i * 131.7 + j * 71.3 + kk * 17.1 + par * 1000; if (hash(q + 9.9) > dens) continue; // densidad del nivel
+        const drift = kind === 'star' ? 2 : 10; const jt = cl.jitter * mot * (kind === 'star' ? 0 : 1);
+        const wx = (i + hash(q)) * C + Math.sin(t * 0.09 * sp + q) * drift * (0.4 + sp) + Math.sin(t * 2.3 + q * 3) * jt * 1.5;
+        const wy = (j + hash(q + 1.3)) * C + Math.cos(t * 0.07 * sp + q) * drift * (0.4 + sp) + Math.cos(t * 2.1 + q * 5) * jt * 1.5;
         const sx = W / 2 + (wx - cx) * zz, sy = H / 2 + (wy - cy) * zz;
-        if (sx < -4 || sx > W + 4 || sy < -4 || sy > H + 4) continue;
-        g.fillStyle = hsl(tintHue, 40, 80, (0.1 + 0.25 * hash(q + 2.7)) * (0.6 + 0.4 * par));
-        g.beginPath(); g.arc(sx, sy, (0.35 + hash(q + 4.1) * 0.9) * base * Math.sqrt(zz), 0, TAU); g.fill();
+        if (sx < -10 || sx > W + 10 || sy < -10 || sy > H + 10) continue;
+        const tw = kind === 'star' ? 0.7 + 0.3 * Math.sin(t * 0.5 * mot + q) : 1; // centelleo lento
+        const hu = kind === 'star' ? lerpHue(cl.hue, 50, 0.3) : (hash(q + 6.6) < 0.25 ? cl.hue2 : cl.hue);
+        const al = kind === 'star' ? (0.3 + 0.5 * hash(q + 2.7)) * tw : (0.16 + 0.32 * hash(q + 2.7)) * (0.6 + 0.4 * Math.min(1, par));
+        const rad = (0.45 + hash(q + 4.1) * 1.0) * base * Math.max(0.75, Math.sqrt(zz));
+        if (kind === 'star' && hash(q + 8.8) < 0.06) { const gr = rad * 7; g.globalAlpha = al * 0.35; g.drawImage(dot(hu), sx - gr, sy - gr, gr * 2, gr * 2); g.globalAlpha = 1; } // estrellas con halo
+        if (kind === 'near' && streak > 0.02) { const L = streak * 34 * par; g.strokeStyle = hsl(hu, 35, 82, al); g.lineWidth = rad * 1.4; g.lineCap = 'round';
+          g.beginPath(); g.moveTo(sx, sy); g.lineTo(sx - Math.cos(camAng) * L, sy - Math.sin(camAng) * L); g.stroke(); continue; }
+        g.fillStyle = hsl(hu, kind === 'star' ? 20 : 40, kind === 'star' ? 88 : 80, al);
+        g.beginPath(); g.arc(sx, sy, rad, 0, TAU); g.fill();
       }
     }
+    // destellos ocasionales: puntos pequeños que brillan 0,6 s (≤ 2/s, WCAG 2.3.1); con movimiento reducido, menos
+    const fl = flashesAt(s.t, flashRate(cl, reducedMotion)); if (fl.length) { // reloj del núcleo: el sonido oye los mismos
+       g.save(); g.globalCompositeOperation = 'lighter';
+      for (const f of fl) { const a = Math.sin((f.age / FLASH_LIFE) * Math.PI); const x = f.x * W, y = f.y * H; const rr = (3 + 5 * f.size) * (0.6 + 0.4 * Math.sqrt(z));
+        g.globalAlpha = 0.6 * a; g.drawImage(dot(lerpHue(cl.hue, 50, 0.5)), x - rr * 2, y - rr * 2, rr * 4, rr * 4);
+        g.strokeStyle = hsl(cl.hue, 30, 92, 0.5 * a); g.lineWidth = 0.8; g.beginPath(); g.moveTo(x - rr * 1.6, y); g.lineTo(x + rr * 1.6, y); g.moveTo(x, y - rr * 1.6); g.lineTo(x, y + rr * 1.6); g.stroke(); }
+      g.restore(); }
     if (s.stain.amount > 0.01) {
       const sp = stainSprite(s.stain.hue, s.texture < 0); const a = smooth(0, 1, s.stain.amount) * (s.amb > 0.3 ? 0.35 : 1);
       g.save(); g.globalAlpha = 0.5 * a; const sz = Math.min(W, H) * (0.9 + 0.5 * a);

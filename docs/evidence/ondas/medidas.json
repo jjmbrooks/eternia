@@ -1,0 +1,102 @@
+{
+ "01-delta-centro": {
+  "def": 0.02,
+  "zoom": 0.407,
+  "nivel": "delta",
+  "polvo": 0.2,
+  "estrellas": 0.9,
+  "velocidad": 0.15,
+  "destellos": 0.03,
+  "orbes": 0.1,
+  "frases": 8
+ },
+ "02-theta": {
+  "def": 0.14,
+  "zoom": 0.523,
+  "nivel": "theta",
+  "polvo": 0.35,
+  "estrellas": 0.6,
+  "velocidad": 0.3,
+  "destellos": 0.08,
+  "orbes": 1,
+  "frases": 8
+ },
+ "03-alfa": {
+  "def": 0.28,
+  "zoom": 0.701,
+  "nivel": "alfa",
+  "polvo": 0.55,
+  "estrellas": 0.45,
+  "velocidad": 0.5,
+  "destellos": 0.12,
+  "orbes": 0.35,
+  "frases": 8
+ },
+ "04-beta-baja": {
+  "def": 0.5,
+  "zoom": 1.036,
+  "nivel": "beta",
+  "polvo": 0.75,
+  "estrellas": 0.3,
+  "velocidad": 0.85,
+  "destellos": 0.2,
+  "orbes": 0,
+  "frases": 8
+ },
+ "05-gamma-disonante": {
+  "def": 0.9,
+  "zoom": 1.381,
+  "nivel": "gamma",
+  "polvo": 1,
+  "estrellas": 0.15,
+  "velocidad": 1.35,
+  "destellos": 0.7,
+  "orbes": 0,
+  "frases": 15
+ },
+ "06-gamma-cristal": {
+  "def": 0.9,
+  "zoom": 1.381,
+  "nivel": "gamma",
+  "polvo": 1,
+  "estrellas": 0.15,
+  "velocidad": 1.35,
+  "destellos": 0.7,
+  "orbes": 0,
+  "frases": 15
+ },
+ "07-viaje-beta": {
+  "def": 0.5,
+  "zoom": 1.036,
+  "nivel": "beta",
+  "polvo": 0.75,
+  "estrellas": 0.3,
+  "velocidad": 0.85,
+  "destellos": 0.2,
+  "orbes": 0,
+  "frases": 8
+ },
+ "08-viaje-theta": {
+  "def": 0.14,
+  "zoom": 0.523,
+  "nivel": "theta",
+  "polvo": 0.35,
+  "estrellas": 0.6,
+  "velocidad": 0.3,
+  "destellos": 0.08,
+  "orbes": 1,
+  "frases": 4
+ },
+ "09-viaje-movimiento-reducido": {
+  "def": 0.5,
+  "zoom": 1.031,
+  "nivel": "beta",
+  "polvo": 0.75,
+  "estrellas": 0.3,
+  "velocidad": 0.85,
+  "destellos": 0.2,
+  "orbes": 0,
+  "frases": 7
+ },
+ "errors": []
+}
