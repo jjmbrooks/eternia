@@ -4,6 +4,7 @@
 |---|---|---|
 | 0. Concepto | PDF, aclaraciones, maquetas hechas con código | hecho (2026-10-12 → 13) |
 | 1. V1 jugable | Núcleo puro + canvas + WebAudio, PWA sin red, Pages, pruebas | hecho (2026-10-17) |
+| 1b. Escala y sonido | Lienzo infinito, zoom ligado al ego, nivel de entrada intermedio, transiciones lentas, 71 frases en esferas, diseño sonoro (`SONIDO.md`) | hecho (2026-10-17) |
 | 2. Afinación jugando | Ajustar los valores [D] y el ritmo hacia el centro, probar en teléfonos reales, decidir los puntos de [ABIERTO.md](ABIERTO.md) | pendiente |
 | 3. Voz | Grabada, del sistema o TTS (el TTS de pago necesita el visto bueno de Brooks) | pendiente |
 | 4. Más material | Más frases, más grano en las texturas, imágenes de fondo más ricas (siempre abstractas) | pendiente |
@@ -17,6 +18,7 @@ Los espacios en blanco se llenan con datos medidos. No se inventan cifras.
 |---|---|---|---|---|---|
 | 0. Concepto | | 3 (generador de Grok Bot) | 0 | | |
 | 1. V1 jugable | | 0 | 0 | | Todo hecho con código |
+| 1b. Escala y sonido | | 0 | 0 | 0 | Todo hecho con código; sin servicios de pago |
 | 2. Afinación | | | | | |
 | 3. Voz | | | | | |
 | 4. Más material | | | | | |

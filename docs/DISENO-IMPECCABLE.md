@@ -110,3 +110,21 @@ Severidades: no hay P0. P1 (corregidos): la vía de accesibilidad y el contraste
 - **Áreas táctiles de 44 px, estados hover y disabled:** no hay controles; toda la pantalla es la superficie del gesto.
 - **Modo claro:** el campo es oscuro por concepto.
 - **Hallazgo en las maquetas** (`docs/mockups/index.html`): es archivo histórico y no se modifica.
+
+## Revisión del 2026-10-17 (tarde): escala, cámara, pensamientos en esferas y sonido
+
+| Paso | Comando | Resultado |
+|---|---|---|
+| Detector (fuentes) | `impeccable detect --json index.html src/` | `[]`, salida 0 |
+| Detector (URL) | `impeccable detect --json --viewport 390x844 http://localhost:4174/eternia/` | `[]` |
+
+El detector no ve el canvas, así que lo nuevo se revisó a mano con `docs/evidence/v2/` (390×844, DPR 2):
+
+- **Tamaño táctil:** la esfera mide ≈ 123 px al entrar (`medidas.json`), casi 3 veces el dedo; además va arriba del
+  dedo. Con el ego bajo baja a ≈ 58 px, pero ahí casi no hay forma que mover.
+- **Esferas de las frases:** membranas con relleno de 3–20 % de alfa; el texto se lee encima sin pérdida de
+  contraste respecto a la v1. No son recuadros ni globos (no tienen cola ni fondo opaco). Excepción al principio
+  «sin contenedores» de DESIGN.md: **la pidió Brooks** («the brief wins»).
+- **Varias líneas:** 1–4 líneas, sin palabras partidas ni palabras de 1–2 letras solas.
+- **Movimiento:** la cámara y el zoom cambian con τ = 3,5 s; no hay saltos. Con movimiento reducido, todo va a la mitad.
+- **Pendiente:** probar en teléfono real; la letra baja de 14 px en la calma porque escala con la cámara (ABIERTO #16).

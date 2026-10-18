@@ -30,9 +30,9 @@ typography:
     letterSpacing: "0.08em"
   thought:
     fontFamily: "Spectral, Georgia, serif"
-    fontSize: "14px–18px (profundidad) + hasta 5px (densidad)"
+    fontSize: "15px × zoom de la cámara (+12 % con densidad)"
     fontWeight: 300
-    lineHeight: 1
+    lineHeight: "18px × zoom"
     letterSpacing: "0.01em"
   thought-dense:
     fontFamily: "Spectral, Georgia, serif"
@@ -73,7 +73,7 @@ components:
 
 ## Overview
 
-Es una pieza de **Experiencia** (modo Experience de Impeccable): la obra es la interfaz y la interfaz se retira. Hay una sola pantalla vertical oscura dibujada en canvas: un campo profundo con grano y viñeta, frases de luz sin recuadro, una esfera que hereda color y forma, y un borde que se expande y se contrae con la respiración. No hay menús, botones, marcadores ni contenedores. Todo lo que pasa se ve y se oye; nada se explica con texto, salvo «toca para entrar» antes del primer toque y las dos líneas de la voz.
+Es una pieza de **Experiencia** (modo Experience de Impeccable): la obra es la interfaz y la interfaz se retira. Hay una sola pantalla vertical oscura dibujada en canvas: un campo profundo con grano y viñeta, frases de luz dentro de esferas-membrana cuya forma depende del tipo de pensamiento, una esfera que hereda color y forma, y un borde que se expande y se contrae con la respiración. El campo es un lienzo infinito: la cámara sigue a la esfera y se acerca cuanto más ego hay. No hay menús, botones, marcadores ni recuadros. Todo lo que pasa se ve y se oye; nada se explica con texto, salvo «toca para entrar» antes del primer toque y las dos líneas de la voz.
 
 Por regla del concepto, la quietud (calma y centro) es más bella que los extremos: más aire, más silencio, colores nítidos sin teñir.
 
@@ -93,8 +93,8 @@ Una sola familia: **Spectral** (Production Type, OFL 1.1), autoalojada en `publi
 |---|---|---|---|---|
 | Título «Eternia» | 200 | 11,5 % del ancho (38–52 px) | 0,32 em | aparece en ~1,6 s y se va; se va antes si alguien toca |
 | Entrada «toca para entrar» | 300 cursiva | 15 px | 0,08 em | aparece a los ~2 s si nadie toca; alfa ≥ 0,53 (≈ 4,5:1) |
-| Frase | 300 | 14–18 px según profundidad | 0,01 em | luz en lugar de recuadro: `shadowBlur` del color de la familia |
-| Frase densa | 500 | + hasta 5 px | 0,01 em | doble trazo desplazado: «más literal, más cuerpo» |
+| Frase | 300 | 15 px × zoom, interlínea 18 px × zoom, 1–4 líneas | 0,01 em | dentro de su esfera-membrana (forma por tipo, `src/core/bubble.js`), con `shadowBlur` del color de la familia |
+| Frase densa | 500 | + 12 % | 0,01 em | la membrana se vuelve más opaca: «más literal, más cuerpo» |
 | Voz | 300 cursiva | 15 px, interlineado 21 px | — | alineada a la derecha, junto a la luz del borde |
 | Panel de depuración | monoespaciada | 11 px | — | solo con `?debug=1`, números tabulares |
 
@@ -133,7 +133,7 @@ La profundidad es **escala y luz**, nunca sombras de interfaz. Las frases más l
 
 - **Sí**: la luz como única forma de jerarquía; los cambios de estado visibles y audibles; mantener el centro como lo más bello.
 - **Sí**: medir todo contra el lado corto; respetar el movimiento reducido (mitad de velocidad, menos grano).
-- **No**: recuadros, burbujas ni tarjetas alrededor de las frases; menús, puntajes, barras de vida ni botones.
+- **No**: recuadros, globos de cómic ni tarjetas alrededor de las frases; menús, puntajes, barras de vida ni botones. **Sí**: la esfera-membrana tenue de cada frase (Brooks, 2026-10-17).
 - **No**: dibujar la vitalidad como un marcador; solo se ve como luz y amplitud del borde.
 - **No**: geometría sagrada importada como ícono; el patrón sale de la filotaxis y las órbitas.
 - **No**: violencia, sangre ni sobresaltos de volumen.

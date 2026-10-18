@@ -33,7 +33,7 @@ No es una app de meditación con instrucciones, rachas ni metas. El gesto (un de
 
 ## Capabilities and Constraints
 
-- Una sola pantalla oscura, sin menús, sin marcador, sin botones, sin cuentas, sin analíticas y sin recuadros alrededor de las frases.
+- Una sola pantalla oscura, sin menús, sin marcador, sin botones, sin cuentas, sin analíticas y sin recuadros ni globos de cómic alrededor de las frases (cada frase vive en una esfera-membrana tenue, pedido de Brooks del 2026-10-17). El campo es un lienzo infinito con una cámara que se acerca con el ego.
 - La única instrucción visible es «toca para entrar», que desaparece con el primer toque.
 - El estado solo se guarda en el dispositivo: el último color.
 - La voz de la v1 es texto; la voz hablada está abierta (`docs/ABIERTO.md`). Un TTS de pago requiere el visto bueno de Brooks.
