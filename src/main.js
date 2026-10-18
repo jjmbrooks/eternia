@@ -1,4 +1,4 @@
-import { createState, step, memoryOf, region, sphereRadius, seedField } from './core/sim.js';
+import { createState, step, memoryOf, region, screenRadius, seedField, toWorld, toScreen, layoutOf } from './core/sim.js';
 import { createRenderer } from './render/renderer.js';
 import { createAudio } from './audio/engine.js';
 import { load, save } from './storage.js';
@@ -11,6 +11,11 @@ const canvas = document.getElementById('field');
 const renderer = createRenderer(canvas, { reducedMotion });
 const audio = createAudio();
 const mem = load();
+// Sin sonido: tecla M (se recuerda en el aparato). Vibración suave y opcional: ?vibra=1 (se recuerda) / ?vibra=0.
+if (params.get('vibra') === '1') mem.settings.vibra = true; if (params.get('vibra') === '0') mem.settings.vibra = false;
+if (mem.settings.muted) audio.setMuted(true);
+const canVibrate = typeof navigator.vibrate === 'function';
+const vibrate = (pattern) => { if (mem.settings.vibra && canVibrate && !reducedMotion) try { navigator.vibrate(pattern); } catch { /* sin vibración */ } };
 const view = () => ({ w: window.innerWidth, h: window.innerHeight });
 let { w, h } = view();
 const s = createState({ w, h, seed: (Date.now() % 100000) + 1, lastHue: mem.lastHue, lastTint: mem.lastTint });
@@ -41,7 +46,7 @@ canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 function enter(x, y) {
   ui.entered = true; ui.ripple = { x, y, t: clock }; audio.start();
   // onboard: el primer toque ya tiene efecto visible — la esfera se inclina hacia donde tocaste
-  const dx = x - s.sphere.x, dy = y - s.sphere.y, d = Math.hypot(dx, dy) || 1;
+  const sp = toScreen(s, s.sphere.x, s.sphere.y); const dx = x - sp.x, dy = y - sp.y, d = Math.hypot(dx, dy) || 1;
   s.sphere.vx += (dx / d) * Math.min(60, d * 0.4); s.sphere.vy += (dy / d) * Math.min(60, d * 0.4);
 }
 
@@ -49,8 +54,10 @@ function enter(x, y) {
 const kb = { x: 0, y: 0, held: false, dirs: new Set() };
 canvas.addEventListener('keydown', (e) => {
   const k = e.key;
-  if (!ui.entered && (k === 'Enter' || k === ' ')) { e.preventDefault(); kb.x = s.sphere.x; kb.y = s.sphere.y; enter(kb.x, kb.y); return; }
-  if (k === ' ') { e.preventDefault(); if (!kb.held) { kb.held = true; if (pointerId === null) { kb.x = s.def >= 0.08 ? s.sphere.x : kb.x || w / 2; kb.y = s.def >= 0.08 ? s.sphere.y : kb.y || h / 2; } } }
+  if (k === 'm' || k === 'M') { audio.setMuted(!audio.muted); mem.settings.muted = audio.muted; remember(); voz.textContent = audio.muted ? 'sin sonido' : 'con sonido'; return; }
+  const sp = toScreen(s, s.sphere.x, s.sphere.y);
+  if (!ui.entered && (k === 'Enter' || k === ' ')) { e.preventDefault(); kb.x = sp.x; kb.y = sp.y; enter(kb.x, kb.y); return; }
+  if (k === ' ') { e.preventDefault(); if (!kb.held) { kb.held = true; if (pointerId === null) { kb.x = s.def >= 0.08 ? sp.x : kb.x || w / 2; kb.y = s.def >= 0.08 ? sp.y : kb.y || h / 2; } } }
   if (k.startsWith('Arrow')) { e.preventDefault(); kb.dirs.add(k); }
   if (k === 'Escape') { kb.held = false; input = null; }
 });
@@ -68,7 +75,13 @@ function keyboardInput(dt) {
 // La voz también llega a lectores de pantalla (región viva), con el mismo texto del borde.
 const VOZ = { disonante: 'Esto te rebasó. No tienes que seguirlo.', cristal: 'Esto también te está usando. Lo bello no es la salida.' };
 const voz = document.getElementById('voz');
-function announce(events) { for (const e of events) if (e.type === 'guide-offer') voz.textContent = VOZ[e.skin]; }
+function announce(events) {
+  for (const e of events) {
+    if (e.type === 'guide-offer') voz.textContent = VOZ[e.skin];
+    if (e.type === 'burst') vibrate(10);                         // estallido: un toque mínimo
+    if (e.type === 'breath-cycle' && s.attention === 'air') vibrate(14); // el aire: un pulso suave al empezar cada inhalación
+  }
+}
 
 const remember = () => save(memoryOf(s), mem.settings);
 addEventListener('pagehide', remember);
@@ -89,7 +102,8 @@ function frame(now) {
     const keep = ui.entered ? null : [s.def, s.vit];
     const ev = step(s, dt, ui.entered ? input : null, { speed });
     if (keep) [s.def, s.vit] = keep;
-    audio.update(s, ev); announce(ev);
+    if (window.__eternia?.afterStep) window.__eternia.afterStep(s); // solo depuración (capturas)
+    audio.update(s, ev, { guideText: s.guide.state === 'offered' && s.guide.textT > 0 }); announce(ev);
     const t0 = performance.now(); renderer.draw(s, ui, clock); ui.drawMs = lerpMs(ui.drawMs, performance.now() - t0);
     if (hud) hudUpdate();
   }
@@ -101,12 +115,15 @@ let hud = null;
 function hudUpdate() {
   hud.textContent = `def ${s.def.toFixed(3)}  ${region(s.def)}\nvit ${s.vit.toFixed(3)}\natt ${s.attention} ${s.attentionTime.toFixed(1)}s\n` +
     `hue ${s.hue.toFixed(0)} tint ${s.tint.toFixed(2)} tex ${s.texture.toFixed(2)} amb ${s.amb.toFixed(2)}\n` +
-    `frases ${s.thoughts.length}  fusión ${s.fusion ? s.fusion.family : '—'}\nvoz ${s.guide.state} ${s.guide.acceptT.toFixed(1)}s  r ${sphereRadius(s).toFixed(0)}px\n` +
+    `frases ${s.thoughts.length}  fusión ${s.fusion ? s.fusion.kind : '—'}\nvoz ${s.guide.state} ${s.guide.acceptT.toFixed(1)}s  ⌀ ${(2 * screenRadius(s)).toFixed(0)}px\n` +
+    `zoom ${s.cam.zoom.toFixed(2)}  cam ${s.cam.x.toFixed(0)},${s.cam.y.toFixed(0)}  ${audio.muted ? 'mudo' : ''}\n` +
     `aire ${s.breath.value.toFixed(2)} (${s.breath.inhale.toFixed(1)}/${s.breath.exhale.toFixed(1)})  rm ${reducedMotion}\ndibujo ${(ui.drawMs || 0).toFixed(1)} ms`;
 }
 if (DEBUG) {
   window.__eternia = { s, ui, setInput: (v) => { input = v; }, enter: () => { ui.entered = true; }, step: (dt, inp) => step(s, dt, inp), seedField: () => seedField(s),
-    put: (text, x, y, extra = {}) => { const ph = PHRASES.find((p) => p.text === text); const th = { id: s.nextId++, ...ph, x, y, vx: 0, vy: 0, depth: 1, density: 0, contact: 0, fused: false, age: 3, life: 60, faint: false, seedRand: s.nextId * 37, ...extra }; s.thoughts.push(th); return th.id; } };
+    // put(): x, y en px de PANTALLA (se convierten a mundo con la cámara actual)
+    put: (text, x, y, extra = {}) => { const ph = PHRASES.find((p) => p.text === text); const wp = toWorld(s, x, y); const th = { id: s.nextId++, ...ph, ...layoutOf(ph.text), x: wp.x, y: wp.y, vx: 0, vy: 0, depth: 1, density: 0, contact: 0, fused: false, age: 3, life: 60, faint: false, seedRand: s.nextId * 37, ...extra }; s.thoughts.push(th); return th.id; },
+    toWorld: (x, y) => toWorld(s, x, y), diam: () => screenRadius(s), toScreen: (x, y) => toScreen(s, x, y) };
   if (DEBUG === '1') { hud = document.createElement('pre'); hud.id = 'hud'; document.body.appendChild(hud); }
 }
 // Espera a Spectral (precacheada) antes de dibujar texto: sin saltos de tipografía. Máximo 1,5 s.

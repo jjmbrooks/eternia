@@ -2,13 +2,76 @@
 
 Este archivo junta las aclaraciones de Brooks y lo que se acordó en el chat del 13 al 17 de octubre de 2026. Cuando algo choca con [CONCEPTO.md](CONCEPTO.md), manda este archivo, porque lo complementa. Los valores en código están en `src/core/params.js`; ahí, los que marca `[D]` son decisiones de esta versión y no vienen del PDF.
 
+## Escala, cámara y lienzo infinito (Brooks, 2026-10-17)
+
+Brooks: «No intentes que todo el universo esté dentro de la pantalla. Las escalas están mal: si el dedo toca la
+esfera, el dedo no deja ver la esfera; tiene que ser más grande y navegar un lienzo infinito en todas direcciones».
+Esto **reemplaza** «la pantalla siempre es la misma» y el radio de 4 % a 11 % del lado corto.
+
+- **Lienzo infinito.** El núcleo trabaja en px de **mundo** (sin orillas) y hay una **cámara** (`s.cam`: posición y
+  zoom). El dedo llega en px de pantalla y se convierte con la cámara. El borde (el aire) sigue siendo la orilla de
+  la **pantalla**: 18 % del lado corto.
+- **Navegar.** Con esfera, el dedo la lleva y la cámara la sigue (1,1/s; si la esfera se acerca a la orilla, la
+  alcanza más rápido). Sostener el dedo lejos del centro es viajar en esa dirección: la esfera persigue al dedo y la
+  cámara la mantiene en la vista, así que el viaje no tiene fin. Sin esfera (centro), **arrastrar mueve el lienzo**
+  con inercia (frenado 1,6/s). Los pensamientos nacen justo fuera de la vista, alrededor de la cámara, y la mayoría
+  por delante cuando se viaja; se van cuando quedan lejos. El fondo tiene motas en tres profundidades y nieblas de
+  color lejanas, ancladas al mundo, con paralaje.
+- **El dedo no tapa la esfera.** La esfera mide **≈ 123 px** de diámetro al entrar (390×844) y el dedo, ~45 px.
+  Además, la esfera va **un poco arriba del dedo** (0,55 de su radio): se la «agarra desde abajo» y queda a la vista.
+  Radio en el mundo: de 54 px (definición 0,08) a 72 px (definición 1); en pantalla × el zoom: ≈ 58 px de diámetro
+  con el ego bajo, ≈ 194 px en el extremo.
+- **Zoom ligado al ego.** Más identificación = cámara más cerca; menos = se aleja y se ve más universo.
+  `zoomFor(def)` es geométrico a ambos lados del nivel de entrada: 0,38 en el centro, **1,0 al entrar (0,45)**, 1,5
+  en el extremo. El extremo se ve estrecho («el fragmento es estrecho, el cristal es estrecho») y el centro, vasto.
+- **El patrón del centro** se dibuja en un punto del mundo que se recentra despacio en la cámara (0,12/s): al
+  arrastrar, el patrón se queda atrás y luego vuelve. **Sostener** para condensar una semilla cuenta solo con el dedo
+  quieto: si se mueve más de 26 px es arrastre y la cuenta vuelve a 0 `[D]`.
+
+## Nivel de entrada intermedio y transiciones lentas (Brooks, 2026-10-17)
+
+- Brooks: «El juego debe iniciar en un estado intermedio», y luego: «en un **nivel** intermedio (no solo zoom), y
+  las transiciones entre niveles deben durar bastante más». Se entra con **definición 0,45**, en la **mezcla**, el
+  nivel del medio de la escala centro · calma · mezcla · extremo (antes 0,22, en la calma). Esfera ligera y todavía
+  sin teñir (como mucho 8 % del último matiz), frases enteras, zoom 1. No es el colapso: el concepto sigue cumplido
+  («siempre se entra cerca», sin vitalidad en cero ni esfera definida).
+- **Ritmo:** las tasas de definición del PDF se multiplican por **`pace = 0,3`**: soltar −0,012/s, aire −0,024/s,
+  fusión +0,018/s. La vitalidad, los umbrales (0,8 s, 1,6 s), la respiración y la voz no cambian.
+- **Tiempos resultantes:** entrada → calma ≈ 8 s soltando (≈ 4 s en el aire); calma → centro ≈ 22 s (≈ 11 s);
+  entrada → centro ≈ 31 s (≈ 15 s); entrada → extremo fundido ≈ 15 s (menos con hermanos). La **cámara** acompaña
+  con τ = 3,5 s (≈ 10 s al 95 %), el **lecho** sonoro con τ = 2,5 s y el **espacio** sonoro con el mismo τ que la
+  cámara. Tabla completa en [SONIDO.md › Transiciones lentas](SONIDO.md#12-transiciones-lentas-pedido-de-brooks-2026-10-17).
+- Esto responde también a ABIERTO #8 (el centro llegaba demasiado rápido).
+
+## Pensamientos dentro de esferas (Brooks, 2026-10-17)
+
+- Brooks: «más frases para los pensamientos, dentro de esferas que son esféricas o más asimétricas dependiendo del
+  tipo de pensamiento; puedes poner las frases en varias líneas». Ahora hay **71 frases** en 8 tipos y cada una vive
+  en una **esfera contenedora**. Ver [FRASES.md](FRASES.md).
+- **Tensión con el concepto:** el PDF pide frases «sin recuadro de cómic» y AGENTS.md prohibía «recuadros alrededor
+  de las frases». La esfera de Brooks no es un recuadro ni un globo de diálogo: es una membrana tenue del color de la
+  frase, sin cola, sin fondo opaco, que se deforma según el tipo y se disuelve con las letras. Manda la aclaración de
+  Brooks; la prohibición queda para recuadros, cajas y globos de cómic.
+- El contacto con la esfera-ego ahora es por círculos: tocan cuando se solapan (radio del ego + 0,55 del radio de la
+  frase). Las esferas de las frases se apartan entre sí.
+- **Legibilidad:** frases enteras desde la mezcla (definición ≥ 0,36), pierden letras en la calma y en el centro no
+  hay texto, como dice la tabla de regiones (antes se perdían letras ya en la mezcla). En el extremo disonante la frase
+  se corta.
+
+## Sonido: diseño detallado (Brooks, 2026-10-17)
+
+Ver [SONIDO.md](SONIDO.md). Se conservan **las tres capas** del concepto (lecho, espiral, respiración). Las voces de
+los pensamientos por tipo y el centro áureo viven dentro de la **espiral**; el gesto del dedo son **acentos** cortos,
+no una cuarta capa. El espacio (reverberación, eco, ancho) sigue al zoom. Tecla **M** para quitar el sonido;
+vibración opcional con `?vibra=1`. Todo es síntesis propia; no hay archivos de audio.
+
 ## Nombre
 
 - Se llama **Eternia**, sin tilde, e-TER-nia. «Eterna» fue un error al escribir.
 
 ## El gesto
 
-- **El dedo es la atención.** Con el dedo en el campo (fuera de la banda del borde) y la esfera presente, la esfera sigue al dedo con inercia. La inercia crece con el tamaño: tarda de 0,15 s a 0,70 s en obedecer.
+- **El dedo es la atención.** Con el dedo en el campo (fuera de la banda del borde) y la esfera presente, la esfera sigue al dedo con inercia (desde el 17 de octubre, a un punto un poco arriba del dedo; ver «Escala»). La inercia crece con el tamaño: tarda de 0,15 s a 0,70 s en obedecer.
   - *Decisión de implementación:* no hace falta tocar justo la esfera, porque cualquier toque en el campo la dirige. Así no hay toques muertos en un teléfono chico, y se cumple lo que dijo Brooks: «la esfera se mueve hacia donde el dedo la dirija».
 - **Soltar** deja la esfera con la inercia que traía; frena despacio, con una fricción de 0,6/s. El ego pierde cohesión despacio (definición **−0,04/s**) y la vitalidad se recupera (**+0,015/s**).
 - **Dedo en la banda del borde** (18 % del lado corto): la respiración sube de volumen, la definición baja **0,08/s** y la vitalidad sube **+0,035/s**. El aire **nunca crea ego**, por más tiempo que el dedo pase ahí.
@@ -23,7 +86,9 @@ Este archivo junta las aclaraciones de Brooks y lo que se acordó en el chat del
 
 ## Regiones = estados de la definición
 
-Las regiones no son lugares de la pantalla, son estados de la definición del ego. La pantalla siempre es la misma.
+Las regiones no son lugares de la pantalla, son estados de la definición del ego. Desde el 17 de octubre se notan
+también en la **cámara**: más ego, más cerca (ver «Escala, cámara y lienzo infinito»). Los tamaños de esfera de la
+tabla son los de la v1; los actuales están en esa sección.
 
 | Estado | Definición | Esfera | Pensamientos en el campo | Lenguaje |
 |---|---|---|---|---|
@@ -48,6 +113,8 @@ El clima sonoro cambia con cada estado y se sintetiza en vivo en **tres capas** 
 | Centro | «delta»: parciales altas, mucho silencio | senos agudos y suaves; la reverberación crece |
 
 La respiración es ruido café con filtro: queda al frente con la atención en el borde y baja con la atención en la esfera.
+
+Diseño completo (voces por tipo, espacio ligado al zoom, mezcla, silencio, accesibilidad): [SONIDO.md](SONIDO.md).
 
 ## Respiración
 
@@ -76,7 +143,7 @@ No hay game over, puntaje, metas ni créditos.
 
 ## Al volver a abrir
 
-- La definición arranca en **0,22**, la vitalidad en **0,75** y la textura en neutra. La esfera tiene **como mucho un 8 %** del último matiz.
+- La definición arranca en **0,45** (el nivel intermedio que pidió Brooks; el PDF decía 0,22), la vitalidad en **0,75** y la textura en neutra. La esfera tiene **como mucho un 8 %** del último matiz.
 - Solo se guarda el color (matiz + tinte), en `localStorage` del dispositivo.
 - Antes del primer toque, la definición y la vitalidad no cambian: el campo se mueve, pero nadie ha llegado todavía.
 
@@ -89,7 +156,7 @@ No hay game over, puntaje, metas ni créditos.
 ## Accesibilidad y movimiento
 
 - Con `prefers-reduced-motion` (o `?rm=1`) el campo va a la mitad de velocidad y el grano baja a la mitad. Las reglas del gesto no cambian.
-- Teclado: mantener Espacio es posar la atención; las flechas la mueven. El borde está en los extremos de la pantalla.
+- Teclado: mantener Espacio es posar la atención; las flechas la mueven. El borde está en los extremos de la pantalla. **M** quita o devuelve el sonido.
 
 ## Atributos de las frases
 

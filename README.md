@@ -13,13 +13,15 @@ No hay menús, puntaje, metas, cuentas ni anuncios. No es un tratamiento ni un d
 No se explica dentro del campo; el campo enseña. Para quien llega aquí:
 
 - **Primer toque**: entras y empieza el sonido (los navegadores lo exigen).
-- **Dedo en el campo**: la esfera lo sigue, con inercia; entre más grande, más tarde obedece.
+- **Dedo en el campo**: la esfera lo sigue (un poco arriba del dedo), con inercia; entre más grande, más tarde obedece. El campo no tiene orilla: si sostienes el dedo lejos de la esfera, viajas en esa dirección.
+- **La cámara sigue al ego**: más identificación, más cerca; menos, se aleja y se ve más universo. Se entra en un nivel intermedio y los cambios son lentos.
 - **Quedarse 0,8 s sobre una frase**: fusión. Fusionarse cuesta vitalidad, sea con una frase áspera o con una bella.
 - **Soltar**: la forma baja sola.
 - **Dedo en el borde**: la respiración. La esfera adelgaza más rápido y la vitalidad vuelve.
 - **Vitalidad en cero dentro de un extremo**: aparece una voz en el borde. Ignorarla es válido. Para aceptarla, quédate tres respiraciones en el borde.
-- **En el centro**: rozar no crea nada. Sostener el dedo 1,6 s condensa una semilla.
-- **Teclado**: Intro entra. Mantén Espacio para posar la atención y muévela con las flechas.
+- **En el centro**: rozar no crea nada. Arrastrar mueve el campo. Sostener el dedo quieto 1,6 s condensa una semilla.
+- **Teclado**: Intro entra. Mantén Espacio para posar la atención y muévela con las flechas. **M** quita el sonido.
+- **Vibración** (Android, opcional): abre con `?vibra=1`.
 
 ## Documentos
 
@@ -27,7 +29,8 @@ No se explica dentro del campo; el campo enseña. Para quien llega aquí:
 |---|---|
 | [`docs/CONCEPTO.md`](docs/CONCEPTO.md) | El documento conceptual completo (el PDF original está en [`docs/ref/`](docs/ref/)) |
 | [`docs/DECISIONES.md`](docs/DECISIONES.md) | Aclaraciones de Brooks y refinamientos acordados |
-| [`docs/FRASES.md`](docs/FRASES.md) | Atributos del banco de frases |
+| [`docs/FRASES.md`](docs/FRASES.md) | Las 71 frases, sus tipos y la forma de su esfera |
+| [`docs/SONIDO.md`](docs/SONIDO.md) | Diseño sonoro detallado |
 | [`docs/ABIERTO.md`](docs/ABIERTO.md) | Puntos abiertos |
 | [`docs/05-ROADMAP.md`](docs/05-ROADMAP.md) | Hoja de ruta y consumo por fase |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | Producto y sistema de diseño (formato Impeccable) |
@@ -41,13 +44,14 @@ No se explica dentro del campo; el campo enseña. Para quien llega aquí:
 ```
 src/core/      simulación pura (sin DOM ni audio, RNG determinista)
   params.js    tabla «Primera afinación» del PDF + decisiones [D]
-  phrases.js   banco de 22 frases con matiz, textura, simetría y activación
+  phrases.js   banco de 71 frases en 8 tipos (22 del PDF) con matiz, textura, simetría y activación
+  bubble.js    esfera contenedora de cada frase: forma por tipo y corte en líneas
   sim.js       estado, reglas, fusión, imán, voz, semilla, respiración
 src/render/    canvas 2D (lee el estado, nunca lo modifica)
-src/audio/     WebAudio sintetizado: lecho por estado, espiral 5/7/4, respiración 4,5/6 s
+src/audio/     WebAudio sintetizado (docs/SONIDO.md): mix.js puro + engine.js; lecho y espacio ligado al zoom, espiral 5/7/4 y voces por tipo, respiración 4,5/6 s
 src/main.js    un dedo (pointer events), teclado, bucle, persistencia, ?debug
 src/sw/        service worker (precache completo → funciona sin red)
-tests/         Vitest sobre el núcleo
+tests/         Vitest sobre el núcleo y la mezcla de sonido
 ```
 
 ```bash

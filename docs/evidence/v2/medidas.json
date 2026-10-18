@@ -1,0 +1,100 @@
+{
+ "01-apertura.png": {
+  "def": 0.45,
+  "zoom": 1,
+  "diam": 122,
+  "frases": 8,
+  "cam": [
+   0,
+   0
+  ]
+ },
+ "02-inicio-intermedio.png": {
+  "def": 0.394,
+  "zoom": 0.948,
+  "diam": 114,
+  "frases": 8,
+  "cam": [
+   0,
+   59
+  ]
+ },
+ "03-viaje-lienzo.png": {
+  "def": 0.488,
+  "zoom": 0.973,
+  "diam": 121,
+  "frases": 8,
+  "cam": [
+   -448,
+   -856
+  ]
+ },
+ "04-ego-alto.png": {
+  "def": 0.899,
+  "zoom": 1.383,
+  "diam": 194,
+  "frases": 15,
+  "cam": [
+   3,
+   -15
+  ]
+ },
+ "05-ego-alto-disonante.png": {
+  "def": 0.899,
+  "zoom": 1.384,
+  "diam": 194,
+  "frases": 15,
+  "cam": [
+   3,
+   -15
+  ]
+ },
+ "06-ego-bajo.png": {
+  "def": 0.15,
+  "zoom": 0.528,
+  "diam": 58,
+  "frases": 8,
+  "cam": [
+   3,
+   -15
+  ]
+ },
+ "07-centro.png": {
+  "def": 0,
+  "zoom": 0.386,
+  "diam": 42,
+  "frases": 8,
+  "cam": [
+   3,
+   -15
+  ]
+ },
+ "08-pensamientos-tipos.png": {
+  "def": 0.5,
+  "zoom": 1,
+  "diam": 124,
+  "frases": 8,
+  "cam": [
+   0,
+   -0.0
+  ]
+ },
+ "09-fusion.png": {
+  "def": 0.567,
+  "zoom": 1.051,
+  "diam": 134,
+  "frases": 3,
+  "cam": [
+   0,
+   23
+  ]
+ },
+ "fusion": {
+  "fusion": {
+   "id": 9,
+   "family": "disonante"
+  },
+  "tint": 0.9677716893506456
+ },
+ "errors": []
+}

@@ -1,6 +1,7 @@
 // Render del campo en canvas 2D. Lee el estado del núcleo; nunca lo modifica.
 import { PARAMS } from '../core/params.js';
-import { sphereRadius, bandWidth, legibility, affinity, skinOf, pulsePhases, PULSE_PERIODS } from '../core/sim.js';
+import { screenRadius, bandWidth, legibility, affinity, skinOf, pulsePhases, toScreen } from '../core/sim.js';
+import { outline } from '../core/bubble.js';
 import { clamp, lerp, smooth } from '../core/math.js';
 
 const TAU = Math.PI * 2;
@@ -9,7 +10,7 @@ const SERIF = '"Spectral", Georgia, "Times New Roman", serif';
 export const TYPE = Object.freeze({
   title: { weight: 200, size: (w) => Math.min(52, Math.max(38, w * 0.115)), tracking: 0.32 },
   hint: { style: 'italic', weight: 300, size: 15, tracking: 0.08 },
-  thought: { weight: 300, weightDense: 500, min: 14, depthGain: 4, densityGain: 5 },
+  thought: { weight: 300, weightDense: 500, base: 15, lead: 18 }, // px a zoom 1; escalan con la cámara (ver DESIGN.md)
   guide: { style: 'italic', weight: 300, size: 15, lead: 21 },
 });
 const hsl = (h, s, l, a = 1) => `hsla(${h.toFixed(1)},${s.toFixed(1)}%,${l.toFixed(1)}%,${a.toFixed(3)})`;
@@ -76,11 +77,34 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
     const r = g.createRadialGradient(W / 2, H * 0.46, 0, W / 2, H * 0.46, H * 0.72);
     r.addColorStop(0, hsl(lerp(225, s.hue, clamp(s.tint)), lerp(30, 70, k), lerp(9, 14, k), 0.55));
     r.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = r; g.fillRect(0, 0, W, H);
-    // el campo profundo: motas lentas
-    for (let i = 0; i < 70; i++) {
-      const px = (hash(i) * W + t * (4 + hash(i + 9) * 6) * (i % 2 ? 1 : -1)) % W, py = (hash(i + 3) * H + t * 3 * hash(i + 5)) % H;
-      g.fillStyle = hsl(lerp(220, s.hue, clamp(s.tint) * 0.6), 40, 80, 0.12 + 0.25 * hash(i + 1));
-      g.beginPath(); g.arc((px + W) % W, (py + H) % H, 0.4 + hash(i + 7) * 1.1, 0, TAU); g.fill();
+    // el lienzo infinito: capas de motas y nieblas ancladas al MUNDO, con paralaje. Al alejarse la cámara
+    // (menos ego) cabe más universo en la pantalla; al acercarse (más ego) se ve menos y más grande.
+    const z = s.cam.zoom; const tintHue = lerp(220, s.hue, clamp(s.tint) * 0.6);
+    // nieblas lejanas: celdas grandes; cada una puede tener una nube de color tenue (abstracta, sin paisaje)
+    { const par = 0.35, C = 1100, zz = z * par + (1 - par) * 0.6; const cx = s.cam.x * par, cy = s.cam.y * par;
+      const hw = W / 2 / zz, hh = H / 2 / zz; g.save(); g.globalCompositeOperation = 'lighter';
+      for (let i = Math.floor((cx - hw) / C) - 1; i <= Math.floor((cx + hw) / C) + 1; i++) for (let j = Math.floor((cy - hh) / C) - 1; j <= Math.floor((cy + hh) / C) + 1; j++) {
+        const hsh = hash(i * 73.1 + j * 19.7); if (hsh < 0.45) continue;
+        const wx = (i + hash(i * 3.3 + j)) * C, wy = (j + hash(i + j * 5.1)) * C; const rr = C * (0.35 + 0.4 * hash(i * 9 + j * 2)) * zz;
+        const sx = W / 2 + (wx - cx) * zz, sy = H / 2 + (wy - cy) * zz;
+        if (sx < -rr || sx > W + rr || sy < -rr || sy > H + rr) continue;
+        const hues = [2, 42, 285, 205, 175]; const hh2 = hues[Math.floor(hash(i * 1.7 + j * 8.3) * 5)];
+        g.globalAlpha = 0.05 + 0.05 * hash(i + j * 11); g.drawImage(dot(hh2), sx - rr, sy - rr, rr * 2, rr * 2);
+      }
+      g.restore(); }
+    // motas: tres profundidades
+    for (const [par, C, n, base] of [[0.45, 260, 2, 0.5], [0.7, 200, 2, 0.8], [1, 170, 1, 1.1]]) {
+      const zz = z * par + (1 - par) * 0.6; const cx = s.cam.x * par, cy = s.cam.y * par;
+      const hw = W / 2 / zz, hh = H / 2 / zz; const i0 = Math.floor((cx - hw) / C), i1 = Math.floor((cx + hw) / C), j0 = Math.floor((cy - hh) / C), j1 = Math.floor((cy + hh) / C);
+      if ((i1 - i0 + 1) * (j1 - j0 + 1) > 400) continue; // tope de costo
+      for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) for (let k = 0; k < n; k++) {
+        const q = i * 131.7 + j * 71.3 + k * 17.1 + par * 1000;
+        const wx = (i + hash(q)) * C + Math.sin(t * 0.05 + q) * 6, wy = (j + hash(q + 1.3)) * C + Math.cos(t * 0.04 + q) * 6;
+        const sx = W / 2 + (wx - cx) * zz, sy = H / 2 + (wy - cy) * zz;
+        if (sx < -4 || sx > W + 4 || sy < -4 || sy > H + 4) continue;
+        g.fillStyle = hsl(tintHue, 40, 80, (0.1 + 0.25 * hash(q + 2.7)) * (0.6 + 0.4 * par));
+        g.beginPath(); g.arc(sx, sy, (0.35 + hash(q + 4.1) * 0.9) * base * Math.sqrt(zz), 0, TAU); g.fill();
+      }
     }
     if (s.stain.amount > 0.01) {
       const sp = stainSprite(s.stain.hue, s.texture < 0); const a = smooth(0, 1, s.stain.amount) * (s.amb > 0.3 ? 0.35 : 1);
@@ -139,18 +163,30 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
     }
   }
 
-  function thoughtText(th, leg) {
-    if (leg >= 0.999) return th.text;
+  function thoughtText(line, seed, off, leg) {
+    if (leg >= 0.999) return line;
     let out = '';
-    for (let i = 0; i < th.text.length; i++) { const ch = th.text[i]; out += ch === ' ' || hash(th.seedRand + i * 13.7) < leg ? ch : '\u2009'; }
+    for (let i = 0; i < line.length; i++) { const ch = line[i]; out += ch === ' ' || hash(seed + (i + off) * 13.7) < leg ? ch : '\u2009'; }
     return out;
+  }
+
+  // Cada pensamiento vive dentro de su esfera contenedora (forma por tipo: src/core/bubble.js).
+  function bubblePath(th, x, y, R, t, toward) {
+    g.beginPath(); const N = 44;
+    for (let k = 0; k <= N; k++) { const a = (k / N) * TAU; const m = outline(th.kind, a, t, th.seedRand % 97, toward); const px = x + Math.cos(a) * R * m, py = y + Math.sin(a) * R * m; k ? g.lineTo(px, py) : g.moveTo(px, py); }
+    g.closePath();
   }
 
   function thoughts(s, t, ui) {
     const leg = legibility(s.def);
     const hasSphere = s.def >= PARAMS.centerMax;
+    const z = s.cam.zoom; const sp = toScreen(s, s.sphere.x, s.sphere.y);
+    const gl = ui.guideA > 0.01 ? { x: W - bandWidth(s.view) * 0.3, y: H * 0.6 } : null;
     g.textAlign = 'center'; g.textBaseline = 'middle';
     for (const th of s.thoughts) {
+      const { x, y } = toScreen(s, th.x, th.y);
+      const R = th.r * z * lerp(0.28, 1, leg) * (th.fused ? 1.06 : 1);
+      if (x < -R * 1.5 || x > W + R * 1.5 || y < -R * 1.5 || y > H + R * 1.5) continue;
       const life = smooth(0, 2.5, th.age) * (1 - smooth(th.life, th.life + 3, th.age));
       let a = life * (0.45 + 0.55 * th.depth);
       if (hasSphere && !th.fused) {
@@ -161,60 +197,83 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
       if (th.family === 'ambigua' && s.def > 0.45 && s.def < 0.75) a = Math.min(1, a * 1.25); // media alta: pesan más
       if (th.fused) a = 1;
       // la voz es distinta de los pensamientos: alrededor de su luz, las frases se retiran
-      if (ui.guideA > 0.01) { const gd = Math.hypot(th.x - (W - bandWidth(s.view) * 0.3), th.y - H * 0.6); a *= 1 - 0.8 * ui.guideA * (1 - smooth(90, 190, gd)); }
+      if (gl) { const gd = Math.hypot(x - gl.x, y - gl.y); a *= 1 - 0.8 * ui.guideA * (1 - smooth(90, 190, gd)); }
       if (a < 0.01) continue;
       const hue = th.family === 'neutra' ? lerp(205, s.hue, 0.2) : th.hue;
-      const size = (TYPE.thought.min + TYPE.thought.depthGain * (th.depth - 0.55) / 0.45 + th.density * TYPE.thought.densityGain) * (th.fused ? 1.12 : 1);
+      const amb = th.family === 'ambigua'; const shimmerHue = (t * 30 + th.id * 40) % 360;
+      const toward = Math.atan2(sp.y - y, sp.x - x);
+      // ── la esfera contenedora: membrana tenue, no un recuadro ──
+      bubblePath(th, x, y, R, t, toward);
+      const sat = th.family === 'neutra' ? 18 : 70; const dens = th.density;
+      const f = g.createRadialGradient(x - R * 0.3, y - R * 0.35, R * 0.1, x, y, R * 1.05);
+      const hA = amb ? shimmerHue : hue;
+      f.addColorStop(0, hsl(hA, sat, 70, (0.035 + 0.05 * dens) * a));
+      f.addColorStop(0.75, hsl(hue, sat, 50, (0.07 + 0.08 * dens) * a));
+      f.addColorStop(1, hsl(amb ? th.hue2 ?? hue : hue, sat, 62, (0.2 + 0.15 * dens) * a));
+      g.fillStyle = f; g.fill();
+      g.save();
+      if (th.kind === 'recuerdo') { g.shadowColor = hsl(hue, 60, 70, 0.8 * a); g.shadowBlur = 12 * z; } // borde difuso
+      g.strokeStyle = amb ? hsl((shimmerHue + 120) % 360, 70, 78, 0.4 * a) : hsl(hue, sat + 10, 76, (0.3 + 0.3 * dens) * a);
+      g.lineWidth = th.kind === 'orgullo' ? 1.3 : th.kind === 'juicio' ? 0.9 : 1; g.stroke(); g.restore();
+      if (th.kind === 'orgullo' && R > 12) { // facetas del cristal, apenas
+        g.save(); g.strokeStyle = hsl(hue + 8, 100, 88, 0.12 * a); g.lineWidth = 0.6; g.beginPath();
+        for (let k = 0; k < 10; k += 2) { const aa = (k / 10) * TAU + t * 0.05; g.moveTo(x, y); g.lineTo(x + Math.cos(aa) * R * 0.95, y + Math.sin(aa) * R * 0.95); }
+        g.stroke(); g.restore();
+      }
       // sin texto (centro o casi): el pensamiento cruza como color
       const moteA = a * (1 - leg);
       if (moteA > 0.02) {
-        const r = 3 + 6 * th.depth; const gr = g.createRadialGradient(th.x, th.y, 0, th.x, th.y, r * 2.4);
-        const c = th.family === 'ambigua' ? (t * 40 + th.id * 50) % 360 : hue;
-        gr.addColorStop(0, hsl(c, 70, 66, 0.55 * moteA)); gr.addColorStop(1, hsl(c, 70, 50, 0));
-        g.fillStyle = gr; g.beginPath(); g.arc(th.x, th.y, r * 2.4, 0, TAU); g.fill();
+        const r = R * 1.2; const gr = g.createRadialGradient(x, y, 0, x, y, r);
+        const c = amb ? shimmerHue : hue;
+        gr.addColorStop(0, hsl(c, 70, 66, 0.5 * moteA)); gr.addColorStop(1, hsl(c, 70, 50, 0));
+        g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
       }
       const ta = a * Math.sqrt(leg);
       if (ta < 0.02) continue;
-      const txt = thoughtText(th, Math.max(leg, th.fused ? 1 : 0));
-      const weight = th.density > 0.3 ? TYPE.thought.weightDense : TYPE.thought.weight;
+      // ── la frase, en varias líneas, dentro de su esfera ──
+      const size = TYPE.thought.base * z * (1 + 0.12 * dens) * (th.fused ? 1.06 : 1);
+      if (size < 6) continue;
+      const lh = TYPE.thought.lead * z * (1 + 0.12 * dens);
+      const weight = dens > 0.3 ? TYPE.thought.weightDense : TYPE.thought.weight;
       g.font = `${weight} ${size.toFixed(1)}px ${SERIF}`; if ('letterSpacing' in g) g.letterSpacing = '0.01em';
-      // nunca cortada por el borde de la pantalla
-      const tw = g.measureText(txt).width * (th.family === 'disonante' ? 1.12 : 1) / 2 + 6;
-      const px = Math.min(Math.max(th.x, tw), W - tw);
-      g.save(); g.translate(px, th.y);
-      g.shadowBlur = 8 + th.density * 16;
-      if (th.family === 'disonante') {
-        g.shadowColor = hsl(hue, 85, 45, 0.9 * ta); g.fillStyle = hsl(hue, 80, 62 + th.density * 8, ta);
-        // fragmento: letras partidas, asimetría
-        const wTot = g.measureText(txt).width; let cx = -wTot / 2; g.textAlign = 'left';
-        for (let i = 0; i < txt.length; i++) {
-          const ch = txt[i]; const cw = g.measureText(ch).width; const hz = hash(th.seedRand + i * 3.1);
-          if (hz > 0.1 || th.fused) {
-            const jit = (1 - th.density * 0.6);
-            g.save(); g.translate(cx, (hash(th.seedRand + i) - 0.5) * 5 * jit + Math.sin(t * 3 + i) * 0.6 * jit);
-            g.rotate((hash(th.seedRand + i * 7) - 0.5) * 0.28 * jit); g.fillText(ch, 0, 0); g.restore();
+      const L = th.lines.length; let off = 0;
+      g.save(); g.shadowBlur = (6 + dens * 12) * Math.min(1, z);
+      for (let li = 0; li < L; li++) {
+        const ly = y + (li - (L - 1) / 2) * lh;
+        const txt = thoughtText(th.lines[li], th.seedRand, off, Math.max(leg, th.fused ? 1 : 0)); off += th.lines[li].length + 1;
+        if (th.family === 'disonante') {
+          g.shadowColor = hsl(hue, 85, 45, 0.9 * ta); g.fillStyle = hsl(hue, 80, 66 + dens * 8, ta);
+          // fragmento: letras partidas, asimetría
+          const wTot = g.measureText(txt).width; let cx = x - wTot / 2; g.textAlign = 'left';
+          for (let i = 0; i < txt.length; i++) {
+            const ch = txt[i]; const cw = g.measureText(ch).width; const hz = hash(th.seedRand + (i + off) * 3.1);
+            if (hz > 0.1 * smooth(0.6, 1, s.def) || th.fused) { // la frase se corta solo en la espiral
+              const jit = (1 - dens * 0.6) * (th.kind === 'preocupacion' ? 0.7 : 1);
+              const tremble = th.kind === 'preocupacion' ? Math.sin(t * 9 + i * 1.7) * 0.7 * z : 0;
+              g.save(); g.translate(cx, ly + (hash(th.seedRand + i + off) - 0.5) * 4 * jit * z + tremble);
+              g.rotate((hash(th.seedRand + (i + off) * 7) - 0.5) * 0.24 * jit); g.fillText(ch, 0, 0); g.restore();
+            }
+            cx += cw * (hz > 0.94 ? 1.4 : 1);
           }
-          cx += cw * (hz > 0.92 ? 1.6 : 1);
+          g.textAlign = 'center';
+        } else if (th.family === 'armonica') {
+          g.shadowColor = hsl(hue, 90, 55, 0.9 * ta); g.fillStyle = hsl(hue, 85, 74 + dens * 8, ta); g.fillText(txt, x, ly);
+        } else if (amb) {
+          const wTot = g.measureText(txt).width; const l = g.createLinearGradient(x - wTot / 2, 0, x + wTot / 2, 0);
+          for (let k = 0; k < 4; k++) l.addColorStop(k / 3, hsl((shimmerHue + k * 85) % 360, 80, 80, ta));
+          g.shadowColor = hsl((shimmerHue + 120) % 360, 70, 60, 0.8 * ta); g.fillStyle = l; g.fillText(txt, x, ly);
+        } else {
+          g.shadowColor = hsl(hue, 30, 70, 0.6 * ta); g.fillStyle = hsl(hue, 18, 80, ta * 0.9); g.fillText(txt, x, ly);
         }
-      } else if (th.family === 'armonica') {
-        g.shadowColor = hsl(hue, 90, 55, 0.9 * ta); g.fillStyle = hsl(hue, 85, 70 + th.density * 8, ta);
-        g.fillText(txt, 0, 0);
-      } else if (th.family === 'ambigua') {
-        const wTot = g.measureText(txt).width; const l = g.createLinearGradient(-wTot / 2, 0, wTot / 2, 0); const sh = t * 30 + th.id * 40;
-        for (let k = 0; k < 4; k++) l.addColorStop(k / 3, hsl((sh + k * 85) % 360, 80, 78, ta));
-        g.shadowColor = hsl((sh + 120) % 360, 70, 60, 0.8 * ta); g.fillStyle = l; g.fillText(txt, 0, 0);
-      } else {
-        g.shadowColor = hsl(hue, 30, 70, 0.6 * ta); g.fillStyle = hsl(hue, 18, 76, ta * 0.85); g.fillText(txt, 0, 0);
       }
-      if (th.density > 0.15) { g.globalAlpha = th.density * 0.5; g.fillText(txt, 0.6, 0.4); } // más literal, más cuerpo
-      g.restore(); g.textAlign = 'center';
+      g.restore();
     }
   }
 
   function sphere(s, t) {
     const vis = smooth(0.06, 0.1, s.def);
     if (vis < 0.01) return;
-    const { x, y } = s.sphere; const r = sphereRadius(s) * (0.6 + 0.4 * vis);
+    const { x, y } = toScreen(s, s.sphere.x, s.sphere.y); const r = screenRadius(s) * (0.6 + 0.4 * vis);
     const tint = clamp(s.tint); const skin = skinOf(s);
     const rough = s.texture < 0 ? clamp(-s.texture) * tint : 0;
     const smoothK = s.texture > 0 ? clamp(s.texture) * tint : 0;
@@ -284,7 +343,7 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
   function center(s, t) {
     const c = 1 - smooth(0.03, 0.2, s.def); // asoma cuando las palabras se retiran; completo en el centro
     if (c < 0.01) return;
-    const cx = W / 2, cy = H * 0.48; const R = Math.min(W, H) * 0.42;
+    const an = toScreen(s, s.anchor.x, s.anchor.y); const cx = an.x, cy = an.y; const R = Math.min(W, H) * 0.42;
     const ph = pulsePhases(t); const n = PARAMS.pulses;
     const hues = [2, 42, 285, 175, 205];
     // tres órbitas lentas
@@ -318,7 +377,8 @@ export function createRenderer(canvas, { reducedMotion = false } = {}) {
     const p = s.pointer; if (!p.down) return;
     if (s.attention === 'pattern') {
       const hold = clamp(s.seed.holdT / PARAMS.seedHold); const sd = s.seed.active ? clamp((s.seed.def - PARAMS.seedStart) / (PARAMS.seedPrend - PARAMS.seedStart)) : 0;
-      const r = 4 + 10 * sd + 3 * hold; const ang = Math.atan2(p.y - H * 0.48, p.x - W / 2) * 180 / Math.PI;
+      const an = toScreen(s, s.anchor.x, s.anchor.y);
+      const r = 4 + 10 * sd + 3 * hold; const ang = Math.atan2(p.y - an.y, p.x - an.x) * 180 / Math.PI;
       const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
       gr.addColorStop(0, hsl(ang, 70, 80, 0.15 + 0.6 * sd)); gr.addColorStop(1, hsl(ang, 70, 60, 0));
       g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, r * 3, 0, TAU); g.fill();
