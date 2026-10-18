@@ -116,6 +116,17 @@ La respiración es ruido café con filtro: queda al frente con la atención en e
 
 Diseño completo (voces por tipo, espacio ligado al zoom, mezcla, silencio, accesibilidad): [SONIDO.md](SONIDO.md).
 
+## Fondo de viaje y clima por nivel (2026-10-17)
+
+Brooks pidió un fondo de viaje con paralaje y un clima por nivel de ondas basado en investigación. Decisiones:
+
+- **Cinco niveles**: delta (< 0,08, centro), theta (0,08–0,2, cerca del centro), alfa (0,2–0,35, calma), beta baja (0,35–0,72, mezcla y entrada), gamma / beta alta (> 0,72, extremo). La calma del concepto se parte en theta y alfa.
+- Cada nivel fija paleta, polvo, estrellas, velocidad, destellos, luces y orbes, y un aire en el lecho sonoro (`src/core/levels.js`, con pruebas). Fundidos de ±0,04 de definición: el clima cambia tan lento como el ego.
+- Seis capas de paralaje procedurales; el polvo cercano (paralaje 1,6) se estira al viajar.
+- **Destellos ≤ 2/s** en rejilla fija (WCAG 2.3.1), pequeños; con movimiento reducido, un tercio, sin estelas ni temblor.
+- Los destellos suenan como brillos muy bajos, sincronizados con la imagen. Sin batidos binaurales.
+- La investigación, la fuerza de cada evidencia y las fuentes: [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md). Tensión con «gamma»: [ABIERTO.md](ABIERTO.md) #18.
+
 ## Respiración
 
 - Sin espiral: **4,5 s de entrada y 6,0 s de salida**. Con la atención en el aire, el ritmo vuelve a este cauce en el ciclo siguiente.

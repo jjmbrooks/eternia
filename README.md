@@ -31,6 +31,7 @@ No se explica dentro del campo; el campo enseña. Para quien llega aquí:
 | [`docs/DECISIONES.md`](docs/DECISIONES.md) | Aclaraciones de Brooks y refinamientos acordados |
 | [`docs/FRASES.md`](docs/FRASES.md) | Las 71 frases, sus tipos y la forma de su esfera |
 | [`docs/SONIDO.md`](docs/SONIDO.md) | Diseño sonoro detallado |
+| [`docs/ONDAS-SENSORIAL.md`](docs/ONDAS-SENSORIAL.md) | Investigación por nivel de ondas y clima del fondo de viaje |
 | [`docs/ABIERTO.md`](docs/ABIERTO.md) | Puntos abiertos |
 | [`docs/05-ROADMAP.md`](docs/05-ROADMAP.md) | Hoja de ruta y consumo por fase |
 | [`PRODUCT.md`](PRODUCT.md) · [`DESIGN.md`](DESIGN.md) | Producto y sistema de diseño (formato Impeccable) |

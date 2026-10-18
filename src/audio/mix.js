@@ -1,5 +1,6 @@
 // Mezcla del sonido como función PURA del estado (sin WebAudio): qué tan fuerte va cada capa y cómo suena el
 // espacio. La usa src/audio/engine.js y la prueban tests/audio.test.js. Diseño completo en docs/SONIDO.md.
+import { climate, flashRate } from '../core/levels.js';
 import { PARAMS } from '../core/params.js';
 import { legibility, region } from '../core/sim.js';
 import { clamp, lerp, smooth } from '../core/math.js';
@@ -12,8 +13,8 @@ export function proximity(zoom, p = PARAMS) {
 // Constantes de tiempo (s) con que el motor persigue cada objetivo. Nada cambia de golpe.
 export const TAU = Object.freeze({ bed: 2.5, space: 3.5, breath: 0.35, voices: 0.6, wind: 0.25, master: 1.5 });
 
-export function mixFor(s, { muted = false, guideText = false } = {}, p = PARAMS) {
-  const d = s.def; const tint = clamp(s.tint); const prox = proximity(s.cam.zoom, p);
+export function mixFor(s, { muted = false, guideText = false, reducedMotion = false } = {}, p = PARAMS) {
+  const d = s.def; const tint = clamp(s.tint); const cl = climate(s); const prox = proximity(s.cam.zoom, p);
   // 1 · LECHO: un clima por región, en fundido cruzado (las regiones son estados de la definición)
   const centro = 1 - smooth(0.02, 0.12, d);
   const calma = smooth(0.04, 0.12, d) * (1 - smooth(0.3, 0.45, d));
@@ -55,6 +56,9 @@ export function mixFor(s, { muted = false, guideText = false } = {}, p = PARAMS)
   return {
     master: muted ? 0 : 0.8, region: region(d), prox, bed, space, pulses, voices, breath,
     wind, windPan: clamp(s.sphere.vx * s.cam.zoom / 400, -0.6, 0.6), shimmer: att === 'pattern' ? seedK : 0,
+    // CLIMA del nivel (docs/ONDAS-SENSORIAL.md): un aire de fondo dentro del lecho (capa 1) y el brillo de los destellos.
+    // Ninguna frecuencia imita ni «induce» una onda cerebral: no hay batidos binaurales.
+    clima: { level: cl.level, noise: cl.noise * (guideText ? 0.45 : 1), noiseLp: cl.noiseLp, glint: cl.glint * (guideText ? 0.3 : 1), flashRate: flashRate(cl, reducedMotion) },
   };
 }
 

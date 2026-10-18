@@ -12,7 +12,8 @@
     "test": "vitest run",
     "icons": "python3 scripts/gen-icons.py",
     "evidence": "python3 scripts/evidence.py",
-    "evidence:v2": "python3 scripts/evidence-v2.py"
+    "evidence:v2": "python3 scripts/evidence-v2.py",
+    "evidence:ondas": "python3 scripts/evidence-ondas.py"
   },
   "devDependencies": {
     "vite": "^6.2.0",
