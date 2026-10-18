@@ -101,16 +101,16 @@ La cantidad de pensamientos sale de `round(3 + 14·def^1.4)`.
 
 ## Sonido
 
-El clima sonoro cambia con cada estado y se sintetiza en vivo en **tres capas** (lecho, espiral, respiración). No hay música grabada y no se promete ningún efecto sobre las ondas cerebrales; los nombres de las ondas solo sirven para pensar el clima.
+El clima sonoro cambia con cada estado y se sintetiza en vivo en **tres capas** (lecho, espiral, respiración). No hay música grabada y no se promete ningún efecto sobre las ondas cerebrales; los estados se llaman por el ruido mental (Tormenta, Parloteo, Murmullo, Quietud, Silencio); las ondas solo inspiraron la investigación ([ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md)).
 
 | Estado | Clima | Implementación v1 |
 |---|---|---|
-| Extremo disonante | «gamma / beta alta»: denso, seco, roto | dientes de sierra desafinados con modulación áspera a 37 Hz y filtro paso bajo |
+| Extremo disonante | Tormenta: denso, seco, roto | dientes de sierra desafinados con modulación áspera a 37 Hz y filtro paso bajo |
 | Extremo cristal | demasiado consonante, sin aire | senos en quintas y octavas puras, sin LFO |
-| Mezcla | «beta baja»: aire cálido | triángulos graves con paso bajo |
-| Calma | «alfa»: tonos que se alargan | senos con LFO lento |
-| Cerca del centro | «theta»: se oyen a la vez los pulsos 5/7/4 | capa de espiral con los tres pulsos |
-| Centro | «delta»: parciales altas, mucho silencio | senos agudos y suaves; la reverberación crece |
+| Mezcla | Parloteo: aire cálido | triángulos graves con paso bajo |
+| Calma | Murmullo: tonos que se alargan | senos con LFO lento |
+| Cerca del centro | Quietud: se oyen a la vez los pulsos 5/7/4 | capa de espiral con los tres pulsos |
+| Centro | Silencio: parciales altas, mucho silencio | senos agudos y suaves; la reverberación crece |
 
 La respiración es ruido café con filtro: queda al frente con la atención en el borde y baja con la atención en la esfera.
 
@@ -118,14 +118,18 @@ Diseño completo (voces por tipo, espacio ligado al zoom, mezcla, silencio, acce
 
 ## Fondo de viaje y clima por nivel (2026-10-17)
 
-Brooks pidió un fondo de viaje con paralaje y un clima por nivel de ondas basado en investigación. Decisiones:
+Brooks pidió un fondo de viaje con paralaje y un clima por nivel basado en investigación. Decisiones:
 
-- **Cinco niveles**: delta (< 0,08, centro), theta (0,08–0,2, cerca del centro), alfa (0,2–0,35, calma), beta baja (0,35–0,72, mezcla y entrada), gamma / beta alta (> 0,72, extremo). La calma del concepto se parte en theta y alfa.
+- **Cinco niveles de ruido mental**, de más ego a menos: Tormenta (> 0,72, extremo), Parloteo (0,35–0,72, mezcla y entrada), Murmullo (0,2–0,35, calma), Quietud (0,08–0,2, cerca del centro), Silencio (< 0,08, centro). La calma del concepto se parte en Murmullo y Quietud.
 - Cada nivel fija paleta, polvo, estrellas, velocidad, destellos, luces y orbes, y un aire en el lecho sonoro (`src/core/levels.js`, con pruebas). Fundidos de ±0,04 de definición: el clima cambia tan lento como el ego.
 - Seis capas de paralaje procedurales; el polvo cercano (paralaje 1,6) se estira al viajar.
 - **Destellos ≤ 2/s** en rejilla fija (WCAG 2.3.1), pequeños; con movimiento reducido, un tercio, sin estelas ni temblor.
 - Los destellos suenan como brillos muy bajos, sincronizados con la imagen. Sin batidos binaurales.
-- La investigación, la fuerza de cada evidencia y las fuentes: [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md). Tensión con «gamma»: [ABIERTO.md](ABIERTO.md) #18.
+- La investigación, la fuerza de cada evidencia y las fuentes: [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md). 
+
+## Nombres de los estados: ruido mental (2026-10-17)
+
+Brooks decidió que los estados se nombran por el **ruido mental**, no por ondas cerebrales: **Tormenta, Parloteo, Murmullo, Quietud, Silencio**. Así se llaman en el código (`LEVELS` en `src/core/levels.js`), en las capturas y en la documentación. Las ondas (gamma/beta alta, beta baja, alfa, theta, delta) quedan solo como nota de inspiración científica en la tabla de correspondencia de [ONDAS-SENSORIAL.md](ONDAS-SENSORIAL.md). El juego no muestra ningún nombre de estado (no hay menús ni etiquetas en el campo); el lector de pantalla tampoco nombra ondas. Cierra [ABIERTO.md](ABIERTO.md) #18.
 
 ## Respiración
 

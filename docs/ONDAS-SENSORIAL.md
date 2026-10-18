@@ -1,14 +1,18 @@
-# Ondas y experiencia sensorial: investigación y mapeo por nivel
+# Ruido mental y experiencia sensorial: investigación y mapeo por nivel
 
-Pedido de Brooks (2026-10-17): investigar, por cada nivel del concepto (gamma / beta alta, beta baja, alfa, theta, delta),
+Los cinco estados se llaman por el **ruido mental**, de más ego a menos: **Tormenta, Parloteo, Murmullo, Quietud,
+Silencio** (decisión de Brooks, 2026-10-17). Las ondas cerebrales quedan solo como inspiración científica, en la tabla de
+correspondencia de §0.
+
+Pedido de Brooks (2026-10-17): investigar, por cada nivel del concepto,
 qué experiencias sensoriales se reportan en la literatura y la fenomenología (meditación, hipnagogia, sueño profundo,
 absorción), y traducirlo a un clima visual y sonoro del fondo de viaje. Implementado en `src/core/levels.js` (puro,
 con pruebas en `tests/ondas.test.js`), `src/render/renderer.js` (fondo) y `src/audio/mix.js` / `engine.js` (sonido).
 
 ## 0. Qué es y qué no es esto
 
-- **Los nombres de las ondas son metáforas de diseño**, igual que en [SONIDO.md](SONIDO.md). Eternia no mide el EEG, no
-  induce ondas y no promete ningún efecto. **No hay batidos binaurales**: la evidencia es inconsistente (en una revisión
+- **Los estados no son ondas cerebrales.** Eternia no mide el EEG, no induce ondas y no promete ningún efecto.
+  Ningún texto del juego, de la interfaz ni de la accesibilidad nombra una onda. **No hay batidos binaurales**: la evidencia es inconsistente (en una revisión
   sistemática de 14 estudios, 5 apoyan, 8 contradicen y 1 es mixto: Ingendoh et al., 2023).
 - Una banda de EEG **no es** una experiencia. La relación entre ondas y vivencia es correlacional, débil y depende de la
   tarea, de la región del cráneo y del método. Lo que tomamos de cada nivel es **lo que la gente cuenta que vive** en estados
@@ -18,9 +22,22 @@ con pruebas en `tests/ondas.test.js`), `src/render/renderer.js` (fondo) y `src/a
   **[M] moderada** (estudios controlados, sin replicar del todo),
   **[A] anecdótica / cualitativa** (entrevistas, casos, autoinforme; útil para diseñar, no para afirmar).
 
+### Tabla de correspondencia (solo inspiración científica)
+
+| Estado (ruido mental) | Definición | Región del concepto | Onda que inspiró la investigación |
+|---|---|---|---|
+| **Tormenta** | > 0,72 | extremo | gamma / beta alta |
+| **Parloteo** (entrada) | 0,35–0,72 | mezcla | beta baja |
+| **Murmullo** | 0,2–0,35 | calma | alfa |
+| **Quietud** | 0,08–0,2 | cerca del centro | theta |
+| **Silencio** | < 0,08 | centro | delta |
+
+Las secciones siguientes citan estudios sobre esas bandas porque es donde está la literatura; el juego solo usa los
+nombres de la primera columna.
+
 ## 1. Lo que dice la literatura, nivel por nivel
 
-### Gamma / beta alta → extremo (definición > 0,72)
+### Tormenta → extremo (definición > 0,72)
 
 | Hallazgo | Evidencia | Fuente |
 |---|---|---|
@@ -29,12 +46,11 @@ con pruebas en `tests/ondas.test.js`), `src/render/renderer.js` (fondo) y `src/a
 | Parte del «gamma» del EEG de cuero cabelludo es artefacto de microsacadas y músculo | [S] replicado | Yuval-Greenberg et al., 2008 |
 | En la práctica de mindfulness no hay cambios consistentes en beta, delta ni gamma | [S] revisión sistemática (56 estudios) | Lomas, Ivtzan & Fu, 2015 |
 
-**Lectura para el diseño.** El concepto usa «gamma / beta alta» para el ego denso y estrecho; la literatura no dice que
-gamma sea agitación (en Lutz et al. es justamente lo contrario). Por eso no tomamos fenomenología de gamma, sino la de la
-**atención estrecha y activada** (beta): campo estrecho, mucho detalle cerca, movimiento nervioso. Queda anotado como
-tensión en §5.
+**Lectura para el diseño.** La Tormenta es el ego denso y estrecho. La literatura no dice que gamma sea agitación (en
+Lutz et al. es justamente lo contrario), así que este estado se diseña desde la **atención estrecha y activada**: campo
+estrecho, mucho detalle cerca, movimiento nervioso. Ver §5.
 
-### Beta baja → mezcla (0,35–0,72; el nivel de entrada, 0,45)
+### Parloteo → mezcla (0,35–0,72; el nivel de entrada, 0,45)
 
 | Hallazgo | Evidencia | Fuente |
 |---|---|---|
@@ -43,7 +59,7 @@ tensión en §5.
 
 **Lectura.** Mundo «normal»: polvo visible, algunas estrellas, movimiento moderado, destellos raros.
 
-### Alfa → calma (0,2–0,35)
+### Murmullo → calma (0,2–0,35)
 
 | Hallazgo | Evidencia | Fuente |
 |---|---|---|
@@ -53,7 +69,7 @@ tensión en §5.
 
 **Lectura.** Más espacio, menos polvo, luces suaves y difusas que respiran despacio; los colores se enfrían (azul, violeta).
 
-### Theta → cerca del centro (0,08–0,2)
+### Quietud → cerca del centro (0,08–0,2)
 
 | Hallazgo | Evidencia | Fuente |
 |---|---|---|
@@ -65,7 +81,7 @@ tensión en §5.
 **Lectura.** El nivel de los **orbes**: formas de luz de dos colores (índigo y verde agua) que aparecen y se desvanecen en
 varios segundos, sin dirección; movimiento lento.
 
-### Delta → centro (< 0,08)
+### Silencio → centro (< 0,08)
 
 | Hallazgo | Evidencia | Fuente |
 |---|---|---|
@@ -83,11 +99,11 @@ tan despacio como el ego (las transiciones lentas de [DECISIONES.md](DECISIONES.
 
 | Nivel (definición) | Paleta (matiz 1 / 2) | Partículas | Velocidad | Destellos | Capa sonora |
 |---|---|---|---|---|---|
-| **Gamma / beta alta** (> 0,72) | rojo 8 (disonante) u oro 42 (cristal), saturado | polvo 1,0 · estrellas 0,15 · sin orbes | 1,35 y temblor 0,6 | 0,7 / s, chispas pequeñas | aire de lecho claro y granulado (paso bajo 2,4 kHz), brillos 0,25 |
-| **Beta baja** (0,35–0,72) | azul gris 205 / ámbar 30 | polvo 0,75 · estrellas 0,3 | 0,85 | 0,2 / s | aire tibio (1,1 kHz) |
-| **Alfa** (0,2–0,35) | azul 214 / violeta 262 | polvo 0,55 · estrellas 0,45 · luces suaves 0,5 · orbes 0,35 | 0,5 | 0,12 / s, centelleo suave | aire suave (700 Hz), brillos 0,5 |
-| **Theta** (0,08–0,2) | índigo 252 / verde agua 178 | polvo 0,35 · estrellas 0,6 · luces 0,7 · **orbes 1** | 0,3 | 0,08 / s | aire cálido y bajo (420 Hz), brillos 0,6 |
-| **Delta** (< 0,08) | azul noche 228 / 250, casi negro | polvo 0,2 · **estrellas 0,9** | 0,15 | 0,03 / s | casi silencio (260 Hz, ganancia 0,02), brillos 0,4 |
+| **Tormenta** (> 0,72) | rojo 8 (disonante) u oro 42 (cristal), saturado | polvo 1,0 · estrellas 0,15 · sin orbes | 1,35 y temblor 0,6 | 0,7 / s, chispas pequeñas | aire de lecho claro y granulado (paso bajo 2,4 kHz), brillos 0,25 |
+| **Parloteo** (0,35–0,72) | azul gris 205 / ámbar 30 | polvo 0,75 · estrellas 0,3 | 0,85 | 0,2 / s | aire tibio (1,1 kHz) |
+| **Murmullo** (0,2–0,35) | azul 214 / violeta 262 | polvo 0,55 · estrellas 0,45 · luces suaves 0,5 · orbes 0,35 | 0,5 | 0,12 / s, centelleo suave | aire suave (700 Hz), brillos 0,5 |
+| **Quietud** (0,08–0,2) | índigo 252 / verde agua 178 | polvo 0,35 · estrellas 0,6 · luces 0,7 · **orbes 1** | 0,3 | 0,08 / s | aire cálido y bajo (420 Hz), brillos 0,6 |
+| **Silencio** (< 0,08) | azul noche 228 / 250, casi negro | polvo 0,2 · **estrellas 0,9** | 0,15 | 0,03 / s | casi silencio (260 Hz, ganancia 0,02), brillos 0,4 |
 
 ## 3. El fondo de viaje (capas de paralaje)
 
@@ -96,9 +112,9 @@ Seis capas ancladas al mundo, procedurales (sin imágenes), dibujadas en canvas:
 | Capa | Paralaje | Qué es |
 |---|---|---|
 | Luces suaves | 0,35 | nubes de color muy tenue (celdas de 1100 px), respiran con un ciclo de ~90 s |
-| Orbes | 0,5 | formas de luz discretas de theta; nacen y se van en 9 s |
+| Orbes | 0,5 | formas de luz discretas de la Quietud; nacen y se van en 9 s |
 | Estrellas lejanas | 0,12 y 0,3 | puntos fríos que centellean lento; 6 % con halo |
-| Polvo medio | 0,55 y 0,85 | motas con deriva; tiemblan en gamma |
+| Polvo medio | 0,55 y 0,85 | motas con deriva; tiemblan en la Tormenta |
 | Polvo cercano | 1,6 | pasa **más rápido que el mundo**; al viajar se estira en la dirección del movimiento |
 | Destellos | pantalla | puntos con cruz que brillan 0,6 s |
 
@@ -114,29 +130,29 @@ el zoom, el lienzo muestra más o menos universo (menos ego = más lejos = más 
 ## 4. Sonido del clima
 
 - Dentro de la capa 1 (lecho), no una capa nueva: un **aire de nivel** (ruido café por paso bajo) que se oscurece hacia el
-  centro (2,4 kHz → 260 Hz) y casi se calla en delta. Baja bajo la voz del cierre.
+  centro (2,4 kHz → 260 Hz) y casi se calla en el Silencio. Baja bajo la voz del cierre.
 - **Brillo de destello**: cada destello visible suena como un seno muy bajo (pentatónica de mi, 1,3–2,2 kHz) con su cola en
   la reverberación, paneado según su posición. Imagen y sonido leen el mismo reloj (`flashesAt(s.t)`), así que coinciden.
 - Ninguna frecuencia intenta imitar ni arrastrar una onda cerebral; no hay batidos binaurales.
 
 ## 5. Tensiones y decisiones
 
-1. **Gamma.** En la literatura, el gamma más famoso (Lutz et al., 2004) aparece en meditación experta, no en la agitación,
-   y parte del gamma de EEG es artefacto. El concepto lo usa para el extremo. Mantenemos el nombre del concepto pero
-   diseñamos ese nivel desde la fenomenología de la **atención estrecha** (beta), y lo dejamos abierto para Brooks
-   ([ABIERTO.md](ABIERTO.md) #18).
-2. **Theta = orbes.** Los reportes de luces y orbes son cualitativos ([A]); los usamos como imagen poética, no como «lo que
+1. **Nombres de ruido mental, no de ondas (cerrado, 2026-10-17).** El gamma más famoso (Lutz et al., 2004) aparece en
+   meditación experta, no en la agitación, y parte del gamma de EEG es artefacto: llamar «gamma» al extremo confundía.
+   Brooks decidió nombrar los estados por el ruido mental (Tormenta, Parloteo, Murmullo, Quietud, Silencio); las ondas
+   quedan solo en la tabla de correspondencia (§0). Cierra [ABIERTO.md](ABIERTO.md) #18.
+2. **Quietud = orbes.** Los reportes de luces y orbes son cualitativos ([A]); los usamos como imagen poética, no como «lo que
    le pasará al jugador».
-3. **Delta = vastedad casi vacía.** El sueño profundo se asocia a menos experiencia recordada; se traduce como espacio, no
+3. **Silencio = vastedad casi vacía.** El sueño profundo se asocia a menos experiencia recordada; se traduce como espacio, no
    como imágenes.
-4. Ningún texto del juego nombra las ondas. Viven solo en la documentación.
+4. Ningún texto del juego, de la interfaz ni de la accesibilidad nombra las ondas. Viven solo en esta documentación, como nota de inspiración.
 
 ## 6. Capturas (390×844, `npm run evidence:ondas`)
 
 En `docs/evidence/ondas/`, en bloques de 3:
-- `revision-bloque-1.jpg`: delta · theta · alfa
-- `revision-bloque-2.jpg`: beta baja (entrada) · gamma disonante · gamma cristal
-- `revision-bloque-3.jpg`: viaje en beta · viaje en theta · viaje con movimiento reducido
+- `revision-bloque-1.jpg`: Silencio · Quietud · Murmullo
+- `revision-bloque-2.jpg`: Parloteo (entrada) · Tormenta disonante · Tormenta cristal
+- `revision-bloque-3.jpg`: viaje en Parloteo · viaje en Quietud · viaje con movimiento reducido
 
 Valores medidos en `docs/evidence/ondas/medidas.json`.
 

@@ -8,9 +8,9 @@ import { mixFor, TAU, pitchFor } from './mix.js';
 import { flashesAt } from '../core/levels.js';
 
 const BEDS = {
-  centro: { type: 'sine', f: [1318.5, 1760, 1975.5, 2637], g: [0.05, 0.035, 0.03, 0.02], lfo: 0.03 },                       // «delta»: parciales altas, mucho silencio
-  calma: { type: 'sine', f: [220, 329.6, 440, 493.9], g: [0.07, 0.05, 0.035, 0.025], lfo: 0.06, lp: 3000 },                  // «alfa»: tonos que se alargan
-  mezcla: { type: 'triangle', f: [110, 164.8, 220, 277.2, 329.6], g: [0.06, 0.045, 0.04, 0.025, 0.02], lfo: 0.1, lp: 1400 }, // «beta baja»: aire cálido
+  centro: { type: 'sine', f: [1318.5, 1760, 1975.5, 2637], g: [0.05, 0.035, 0.03, 0.02], lfo: 0.03 },                       // Silencio: parciales altas, mucho silencio
+  calma: { type: 'sine', f: [220, 329.6, 440, 493.9], g: [0.07, 0.05, 0.035, 0.025], lfo: 0.06, lp: 3000 },                  // Murmullo: tonos que se alargan
+  mezcla: { type: 'triangle', f: [110, 164.8, 220, 277.2, 329.6], g: [0.06, 0.045, 0.04, 0.025, 0.02], lfo: 0.1, lp: 1400 }, // Parloteo: aire cálido
   disonante: { type: 'sawtooth', f: [110, 116.5, 155.6, 164.8, 233.1, 246.9], g: [0.035, 0.03, 0.025, 0.025, 0.018, 0.018], lfo: 0.4, lp: 2200, am: 37 }, // denso, seco, roto
   cristal: { type: 'sine', f: [110, 165, 220, 330, 440, 660], g: [0.06, 0.05, 0.045, 0.035, 0.03, 0.02], lfo: 0, lp: 8000 }, // demasiado consonante, sin aire
 };
@@ -82,7 +82,7 @@ export function createAudio() {
     const sg = ctx.createGain(); sg.gain.value = 0; const s1 = ctx.createOscillator(), s2 = ctx.createOscillator();
     s1.frequency.value = 660; s2.frequency.value = 660 * 1.618; s1.connect(sg); s2.connect(sg); sg.connect(master); s1.start(); s2.start();
     shimmer = { g: sg, s1, s2 };
-    // aire del nivel (lecho): ruido café por un paso bajo; delta casi silencio y oscuro, gamma más granulado y claro
+    // aire del nivel (lecho): ruido café por un paso bajo; en Silencio casi nada y oscuro, en Tormenta más granulado y claro
     const cs = ctx.createBufferSource(); cs.buffer = noiseBuffer(5); cs.loop = true;
     const clp = ctx.createBiquadFilter(); clp.type = 'lowpass'; clp.frequency.value = 700; clp.Q.value = 0.3;
     const cg = ctx.createGain(); cg.gain.value = 0; cs.connect(clp); clp.connect(cg); cg.connect(master); cs.start();
